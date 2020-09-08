@@ -24,7 +24,7 @@ module.exports = {
                 prependData: `@import "./src/styles/main.scss";`
             }
         }, // css预设器配置项
-        requireModuleExtension: false // 启用 CSS modules for all css / pre-processor files. (vue-cli 4.0已弃用vue.config.js中的“ css.modules”选项，请改用“ css.requireModuleExtension”。)
+        requireModuleExtension: true // 启用 CSS modules for all css / pre-processor files. (vue-cli 4.0已弃用vue.config.js中的“ css.modules”选项，请改用“ css.requireModuleExtension”。)
     },
     // 开发环境配置
     devServer: {

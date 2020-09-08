@@ -5,5 +5,5 @@
 </template>
 
 <style lang="scss">
-#app {}
+#app {height: 100vh;}
 </style>
