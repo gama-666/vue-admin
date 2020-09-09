@@ -71,20 +71,12 @@ import {
   validataPassword,
   validataCode
 } from "@/utils/validata";
-import { ref, reactive, value, onMounted } from "@vue/composition-api";
+
 export default {
   name: "login",
-  setup(props, context) {
-    /*
-       setup第二个参数是context，包含以下方法
-        context.attrs
-        context.slots
-        context.parent
-        context.root
-        context.emit
-        context.refs
-      */
-    //1、表单的验证 ************************************************************************/
+  data() {
+    /************************************************************************/
+    /*表单的验证*/
     //、验证码用户名
     let validateUsername = (rule, value, callback) => {
       if (value === "") {
@@ -97,8 +89,8 @@ export default {
     };
     //、密码校验
     let validatePassword = (rule, value, callback) => {
-      ruleForm.password = stripscript(value);
-      value = ruleForm.password;
+      this.ruleForm.password = stripscript(value);
+      value = this.ruleForm.password;
       if (value === "") {
         callback(new Error("密码不能为空"));
       } else if (validataPassword(value)) {
@@ -109,14 +101,11 @@ export default {
     };
     //、重复密码校验
     let validatePasswords = (rule, value, callback) => {
-      if (model.value === "login") {
-        callback();
-      }
-      ruleForm.passwords = stripscript(value);
-      value = ruleForm.passwords;
+      this.ruleForm.passwords = stripscript(value);
+      value = this.ruleForm.passwords;
       if (value === "") {
         callback(new Error("请再次输入密码"));
-      } else if (value != ruleForm.password) {
+      } else if (value != this.ruleForm.password) {
         callback(new Error("密码不一致"));
       } else {
         callback();
@@ -124,8 +113,8 @@ export default {
     };
     //、验证码校验
     let checkAge = (rule, value, callback) => {
-      ruleForm.code = stripscript(value);
-      value = ruleForm.code;
+      this.ruleForm.code = stripscript(value);
+      value = this.ruleForm.code;
       if (value === "") {
         callback(new Error("请输入验证码"));
       } else if (validataCode(value)) {
@@ -134,43 +123,49 @@ export default {
         callback();
       }
     };
-
-    //2、数据位置 ************************************************************************/
-    //、登录注册按钮的数据
-    const menuTab = reactive([
-      { txt: "登录", current: true, type: "login" },
-      { txt: "注册", current: false, type: "register" }
-    ]);
-    //模块值
-    const model = ref("login");
-    //、表单的数据
-    const ruleForm = reactive({
-      username: "",
-      password: "",
-      passwords: "",
-      code: ""
-    });
-    const rules = reactive({
-      username: [{ validator: validateUsername, trigger: "blur" }],
-      password: [{ validator: validatePassword, trigger: "blur" }],
-      passwords: [{ validator: validatePasswords, trigger: "blur" }],
-      code: [{ validator: checkAge, trigger: "blur" }]
-    });
-
-    //3、声明函数 ***********************************************************************/
+    /************************************************************************/
+    /*数据位置*/
+    return {
+      //、登录注册按钮的数据
+      menuTab: [
+        { txt: "登录", current: true, type: "login" },
+        { txt: "注册", current: false, type: "register" }
+      ],
+      //模块值
+      model: "login",
+      //、表单的数据
+      ruleForm: {
+        username: "",
+        password: "",
+        passwords: "",
+        code: ""
+      },
+      rules: {
+        username: [{ validator: validateUsername, trigger: "blur" }],
+        password: [{ validator: validatePassword, trigger: "blur" }],
+        passwords: [{ validator: validatePasswords, trigger: "blur" }],
+        code: [{ validator: checkAge, trigger: "blur" }]
+      }
+    };
+  },
+  created() {},
+  mounted() {},
+  /************************************************************************/
+  /*函数位置*/
+  methods: {
     //、登录注册按钮的状态切换
-    const toggleMeuu = data => {
+    toggleMeuu(data) {
       //高光,当前选中
-      menuTab.forEach(item =>
+      this.menuTab.forEach(item =>
         item.txt == data.txt ? (item.current = true) : (item.current = false)
       );
       //修改模块的值
-      model.value = data.type;
-      ruleForm.username = "";
-    };
+      this.model = data.type;
+      this.ruleForm.username="";
+    },
     //、表单的方法
-    const submitForm = formName => {
-      context.refs[formName].validate(valid => {
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           alert("submit!");
         } else {
@@ -178,21 +173,7 @@ export default {
           return false;
         }
       });
-    };
-
-    //4、生命周期 ***********************************************************************/
-    //、挂载完成后
-    onMounted(() => {});
-
-    //5、3.0没有返回，不能使用//
-    return {
-      menuTab,
-      ruleForm,
-      model,
-      rules,
-      toggleMeuu,
-      submitForm
-    };
+    }
   }
 };
 </script>
