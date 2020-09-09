@@ -52,7 +52,7 @@
               <el-input type="text" v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
             </el-col>
             <el-col :span="12">
-              <el-button type="success" round class="block">获取验证码</el-button>
+              <el-button type="success" round class="block" @click="getsms()">获取验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -65,13 +65,15 @@
   </div>
 </template>
 <script>
+import { GetSms } from "api/login.js";
 import {
   stripscript,
   validataEmail,
   validataPassword,
   validataCode
 } from "@/utils/validata";
-import { ref, reactive, value, onMounted } from "@vue/composition-api";
+
+import { ref, reactive, onMounted } from "@vue/composition-api";
 export default {
   name: "login",
   setup(props, context) {
@@ -168,7 +170,11 @@ export default {
       model.value = data.type;
       ruleForm.username = "";
     };
-    //、表单的方法
+    //、获取验证码
+    const getsms = () => {
+      GetSms();
+    };
+    //、提交表单
     const submitForm = formName => {
       context.refs[formName].validate(valid => {
         if (valid) {
@@ -191,7 +197,8 @@ export default {
       model,
       rules,
       toggleMeuu,
-      submitForm
+      submitForm,
+      getsms
     };
   }
 };
@@ -218,6 +225,7 @@ export default {
   }
   .current {
     background-color: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
   }
   .el-form-item__label {
     color: #ffffff;

@@ -1,6 +1,6 @@
 module.exports = {
-    publicPath: './', // 部署应用时的根路径(默认'/'),也可用相对路径(存在使用限制)
-    outputDir: 'dist', // 打包文件存放目录(默认''dist''，构建之前会被清除)
+    publicPath: process.env.NODE_ENV === 'production' ? '' : './', // 部署应用时的根路径(默认'/'),也可用相对路径(存在使用限制)
+    outputDir: process.env.NODE_ENV === 'production' ? 'dist' : 'devdist', // 打包文件存放目录(默认''dist''，构建之前会被清除)
     assetsDir: '', //放置打包生成的静态资源(s、css、img、fonts)的(相对于 outputDir 的)目录(默认'')
     indexPath: 'index.html', //指定生成的 index.html 的输出路径(相对于 outputDir)也可以是一个绝对路径。
     pages: {
@@ -20,6 +20,7 @@ module.exports = {
             alias: {
                 'assets': '@/assets',
                 'components': '@/components',
+                'api': '@/api',
                 'views': '@/views'
             }
         }
@@ -38,23 +39,24 @@ module.exports = {
     },
     // 开发环境配置
     devServer: {
-        open: true, // 启动服务后是否打开浏览器
+        open: false, // 启动服务后是否打开浏览器
         host: '0.0.0.0',//指定使用地址，默认localhost，0.0.0.0代表可以被外界访问
         port: 8080, // 服务端口
-        https: false,//编译失败时刷新页面
         hot: true,//开启热更新
         hotOnly: false,
-        before: app => {
-        },
         proxy: {  // 设置代理
-            // 配置多个代理(配置一个 proxy: 'http://localhost:4000' )
             '/api': {
-                target: 'http://192.168.1.103:5000',
-                // target: 'http://192.168.1.4:8999',
+                /* 目标代理服务器地址 */
+                target: 'http://www.web-jshtml.cn/productapi',
+                /* 允许跨域 */
+                changeOrigin: true,
+                ws: true,
                 pathRewrite: {
-                    '^/api': '/api'
+                    '^/api': ''
                 }
             }
+        },
+        before: app => {
         }
     },
     pluginOptions: {
