@@ -14,6 +14,16 @@ module.exports = {
             chunks: ['chunk-vendors', 'chunk-common', 'index'] // 在这个页面中包含的块，默认情况下会包含,提取出来的通用 chunk 和 vendor chunk
         }
     },
+    configureWebpack: {
+        //定义路径别名
+        resolve: {
+            alias: {
+                'assets': '@/assets',
+                'components': '@/components',
+                'views': '@/views'
+            }
+        }
+    },
     lintOnSave: false, // 是否在保存的时候检查
     productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
     css: {
