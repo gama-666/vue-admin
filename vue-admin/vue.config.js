@@ -45,14 +45,14 @@ module.exports = {
         hot: true,//开启热更新
         hotOnly: false,
         proxy: {  // 设置代理
-            '/api': {
+            '/devapi': {
                 /* 目标代理服务器地址 */
                 target: 'http://www.web-jshtml.cn/productapi',
                 /* 允许跨域 */
                 changeOrigin: true,
                 ws: true,
                 pathRewrite: {
-                    '^/api': ''
+                    '^/devapi': ''
                 }
             }
         },

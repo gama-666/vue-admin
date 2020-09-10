@@ -1,0 +1,27 @@
+import http from "@/utils/request.js";
+
+/*获取验证码*/
+export function GetSms(data) {
+    return http.request({
+        method: 'post',
+        url: '/getSms/',
+        data
+    })
+}
+/*注册*/
+export function Register(data) {
+    return http.request({
+        method: 'post',
+        url: '/register/',
+        data
+    })
+}
+/*登录*/
+/*注册*/
+export function Login(data) {
+    return http.request({
+        method: 'post',
+        url: '/login/',
+        data
+    })
+}
