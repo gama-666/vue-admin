@@ -17,7 +17,7 @@
             <el-submenu v-if="!item.hidden" :key="item.id" :index="index + ''">
               <!-- 一级菜单 -->
               <template slot="title">
-                <i :class="item.meta.icon"></i>
+                <svg-icon :iconName="item.meta.icon" :className="item.meta.icon" />
                 <span>{{item.meta.name}}</span>
               </template>
               <!-- 子级菜单 -->
@@ -65,5 +65,10 @@ export default {
   height: 100vh;
   width: $navMenu;
   background-color: $navMenubg;
+  svg {
+    font-size: 20px;
+
+    margin-right: 10px;
+  }
 }
 </style>

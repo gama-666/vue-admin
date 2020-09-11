@@ -5,12 +5,7 @@ import store from "./store";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueCompositionAPI from '@vue/composition-api'
-
-Vue.component("svg-icon", {
-  template: "<h1>5465464</h1>"
-});
-
-Vue.component('component-a', { /* ... */ })
+import "./icon";
 
 Vue.use(VueCompositionAPI)
 Vue.use(ElementUI, {
