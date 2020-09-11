@@ -4,8 +4,7 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     redirect: "login",
     hidden: true,
@@ -27,29 +26,28 @@ const routes = [
     name: "Console",
     redirect: "index",
     meta: {
-      name: "控制台"
+      name: "控制台",
+      icon: "el-icon-setting"
     },
     component: () => import("../views/Layout/index.vue"),
-    children: [
-      {
-        path: "/index",
-        name: "Index",
-        meta: {
-          name: "首页"
-        },
-        component: () => import("../views/Console/index.vue"),
+    children: [{
+      path: "/index",
+      name: "Index",
+      meta: {
+        name: "首页"
       },
-    ]
+      component: () => import("../views/Console/index.vue"),
+    }, ]
   },
   {
     path: "/info",
     name: "Info",
     meta: {
-      name: "信息管理"
+      name: "信息管理",
+      icon: "el-icon-s-order"
     },
     component: () => import("../views/Layout/index.vue"),
-    children: [
-      {
+    children: [{
         path: "/infoList",
         name: "InfoList",
         meta: {
@@ -72,19 +70,18 @@ const routes = [
     name: "User",
     redirect: "index",
     meta: {
-      name: "用户管理"
+      name: "用户管理",
+      icon: "el-icon-user-solid"
     },
     component: () => import("../views/Layout/index.vue"),
-    children: [
-      {
-        path: "/userList",
-        name: "UserList",
-        meta: {
-          name: "用户列表"
-        },
-        component: () => import("../views/user/list.vue"),
+    children: [{
+      path: "/userList",
+      name: "UserList",
+      meta: {
+        name: "用户列表"
       },
-    ]
+      component: () => import("../views/user/list.vue"),
+    }, ]
   }
 ];
 

@@ -17,7 +17,7 @@
             <el-submenu v-if="!item.hidden" :key="item.id" :index="index + ''">
               <!-- 一级菜单 -->
               <template slot="title">
-                <i class="el-icon-location"></i>
+                <i :class="item.meta.icon"></i>
                 <span>{{item.meta.name}}</span>
               </template>
               <!-- 子级菜单 -->
@@ -41,7 +41,6 @@ export default {
     //1、数据位置 ************************************************************************/
     const isCollpase = ref(false);
     const routes = reactive(root.$router.options.routes);
-
     //2、声明函数 ***********************************************************************/
     const handleOpen = (key, keyPath) => {
       console.log(key, keyPath);
@@ -65,6 +64,6 @@ export default {
   left: 0;
   height: 100vh;
   width: $navMenu;
-  background-color: #344a5f;
+  background-color: $navMenubg;
 }
 </style>

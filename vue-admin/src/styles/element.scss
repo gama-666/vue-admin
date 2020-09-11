@@ -1,0 +1,18 @@
+.el-menu-vertical-demo .el-submenu .el-menu-item {
+    font-size: 14px;
+    padding-left: 50px !important;
+    &.is-active {
+        background-color: rgba(245, 108, 108, 0.1) !important;
+    }
+}
+
+.el-menu-vertical-demo li {
+    font-size: 14px !important;
+}
+
+//修改一级样式表
+.el-menu-vertical-demo li.el-submenu {
+    &.is-active .el-submenu__title {
+        background-color: $maincolor !important;
+    }
+}
