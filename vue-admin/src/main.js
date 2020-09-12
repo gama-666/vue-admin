@@ -5,7 +5,7 @@ import store from "./store";
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueCompositionAPI from '@vue/composition-api'
-import "./icon";
+import "./icon/index.js";
 
 Vue.use(VueCompositionAPI)
 Vue.use(ElementUI, {
