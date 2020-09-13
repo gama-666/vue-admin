@@ -1,20 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-
 Vue.use(Vuex);
+import app from "./modules/app.js"
+import login from "./modules/login.js"
 
 export default new Vuex.Store({
-  state: {
-    // 取本地值，本地没值取默认值(临时)
-    isCollpase: JSON.parse(sessionStorage.getItem('isCollpase')) || false,
-  },
-  mutations: {
-    SET_COLLPASE: (state) => {
-      state.isCollpase = !state.isCollpase;
-      // html5本地存储(临时存储，关闭浏览器就清除)
-      sessionStorage.setItem('isCollpase', JSON.stringify(state.isCollpase))
-    }
-  },
-  actions: {
+  modules: {
+    app,
+    login
   }
 });

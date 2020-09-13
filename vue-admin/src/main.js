@@ -2,16 +2,19 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-import VueCompositionAPI from '@vue/composition-api'
-import "./icon/index.js";
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
+import VueCompositionAPI from "@vue/composition-api";
+import "./router/primit";
+//自定义全局组件
+import "./icon";
+
+
+
+
 
 Vue.use(VueCompositionAPI)
-Vue.use(ElementUI, {
-  size: 'small',
-});
-
+Vue.use(ElementUI);
 Vue.config.productionTip = false;
 
 

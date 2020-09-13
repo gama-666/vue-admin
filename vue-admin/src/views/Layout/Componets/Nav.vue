@@ -43,8 +43,7 @@ export default {
     //、导航菜单
     const routes = reactive(root.$router.options.routes);
     //、监听值得变化，导航菜单的展开收起
-    const isCollpase = computed(() => root.$store.state.isCollpase);
-
+    const isCollpase = computed(() => root.$store.state.app.isCollpase);
     return {
       isCollpase,
       routes

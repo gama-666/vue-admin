@@ -15,7 +15,7 @@ export default {
   name: "layout",
   components: { Lyaoutheader, Lyaoutmain, Lyaoutnav },
   setup(props, { root }) {
-    const isCollpase = computed(() => root.$store.state.isCollpase);
+    const isCollpase = computed(() => root.$store.state.app.isCollpase);
     return {
       isCollpase
     };

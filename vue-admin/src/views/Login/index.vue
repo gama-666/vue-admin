@@ -86,7 +86,7 @@ import {
   validataPassword,
   validataCode
 } from "@/utils/validata";
-
+import { setToken } from "@/utils/app.js";
 import { ref, reactive, onMounted } from "@vue/composition-api";
 export default {
   name: "login",
@@ -246,33 +246,11 @@ export default {
             module: model.value
           };
           //当前页面在register发生注册请求
-
           if (model.value == "register") {
-            Register(requestData)
-              .then(response => {
-                let data = response.data;
-                root.$message({
-                  message: data.message,
-                  type: "success"
-                });
-                toggleMenu(menuTab[0]);
-              })
-              .catch(error => {});
+            regiser(requestData);
             //如果也是在login发生登录请求
           } else if (model.value == "login") {
-            Login(requestData)
-              .then(response => {
-                let data = response.data;
-                root.$message({
-                  message: data.message,
-                  type: "success"
-                });
-                //登录成功路由跳转
-                root.$router.push({
-                  name: "Console",
-                });
-              })
-              .catch(error => {});
+            signIn(requestData);
           }
         } else {
           console.log("error submit!!");
@@ -280,6 +258,38 @@ export default {
         }
       });
     };
+
+    //注册
+    const regiser = requestData => {
+      Register(requestData)
+        .then(response => {
+          let data = response.data;
+          root.$message({
+            message: data.message,
+            type: "success"
+          });
+          toggleMenu(menuTab[0]);
+        })
+        .catch(error => {});
+    };
+    //登录
+    const signIn = requestData => {
+      Login(requestData)
+        .then(response => {
+          let data = response.data;
+          setToken(data.data.token);
+          root.$message({
+            message: data.message,
+            type: "success"
+          });
+          //登录成功路由跳转
+          root.$router.push({
+            name: "Console"
+          });
+        })
+        .catch(error => {});
+    };
+
     //、重置表单
     const resetForm = formName => {
       refs[formName].resetFields();

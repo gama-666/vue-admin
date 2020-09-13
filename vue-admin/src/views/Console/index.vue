@@ -6,7 +6,7 @@
 <script>
 export default {
   name: "console",
-  setup() {
+  setup(props, { root }) {
     return {};
   }
 };
