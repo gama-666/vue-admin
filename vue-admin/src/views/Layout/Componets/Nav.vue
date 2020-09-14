@@ -65,6 +65,12 @@ export default {
     margin-right: 10px;
     color: #fff;
   }
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
 }
 .logo {
   img {
