@@ -277,9 +277,9 @@ export default {
       Login(requestData)
         .then(response => {
           let data = response.data;
-          root.$store.commit("app/GET_USERNAME");
           setToken(data.data.token);
           setUsername(data.data.username);
+          root.$store.commit("app/GET_USERNAME");
           root.$message({
             message: data.message,
             type: "success"

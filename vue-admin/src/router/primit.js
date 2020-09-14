@@ -1,6 +1,6 @@
 import router from "./index";
 
-import { getToken ,deleteToken} from "@/utils/app";
+import { getToken ,removeUsername ,removeToken} from "@/utils/app";
 
 //添加白名单，数组indexOf方法，判断数组中是否存在指定的某个对象，如果不存在，则返回-1
 const wihteRouter = ['/login'];
@@ -9,7 +9,8 @@ const wihteRouter = ['/login'];
 router.beforeEach((to, from, next) => {
     if (getToken()) {
         if (to.path === "/login") {
-            deleteToken()
+            removeUsername()
+            removeToken()
             next()
         } else {
             next()
