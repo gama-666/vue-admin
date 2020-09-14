@@ -1,13 +1,14 @@
 <template>
   <div id="nav-wrap">
+    <div class="logo">
+      <img src="../../../assets/logo.png" alt />
+    </div>
     <el-row class="tac">
       <el-col :span="24">
         <el-menu
           router
           default-active="1"
           class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
           :collapse="isCollpase"
           background-color="transparent"
           text-color="#fff "
@@ -17,7 +18,7 @@
             <el-submenu v-if="!item.hidden" :key="item.id" :index="index + ''">
               <!-- 一级菜单 -->
               <template slot="title">
-                <i :class="item.meta.icon"></i>
+                <svg-icon :iconName="item.meta.icon" :className="item.meta.icon" />
                 <span>{{item.meta.name}}</span>
               </template>
               <!-- 子级菜单 -->
@@ -34,25 +35,18 @@
   </div>
 </template>
 <script>
-import { reactive, ref } from "@vue/composition-api";
+import { reactive, ref, computed } from "@vue/composition-api";
 export default {
   name: "navMenu",
   setup(props, { root }) {
     //1、数据位置 ************************************************************************/
-    const isCollpase = ref(false);
+    //、导航菜单
     const routes = reactive(root.$router.options.routes);
-    //2、声明函数 ***********************************************************************/
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
+    //、监听值得变化，导航菜单的展开收起
+    const isCollpase = computed(() => root.$store.state.app.isCollpase);
     return {
       isCollpase,
-      routes,
-      handleOpen,
-      handleClose
+      routes
     };
   }
 };
@@ -65,5 +59,38 @@ export default {
   height: 100vh;
   width: $navMenu;
   background-color: $navMenubg;
+  @include webkit(transition, all 0.3s ease 0s);
+  svg {
+    font-size: 20px;
+    margin-right: 10px;
+    color: #fff;
+  }
+}
+.logo {
+  img {
+    margin: 25px auto 15px;
+    display: block;
+    @include webkit(transition, all 0.3s ease 0s);
+  }
+}
+.open {
+  #nav-wrap {
+    width: $navMenu;
+  }
+  .logo {
+    img {
+      width: 105px;
+    }
+  }
+}
+.close {
+  #nav-wrap {
+    width: $minNavMenu;
+  }
+  .logo {
+    img {
+      width: 50px;
+    }
+  }
 }
 </style>

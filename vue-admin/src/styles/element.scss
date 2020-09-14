@@ -5,14 +5,34 @@
         background-color: rgba(245, 108, 108, 0.1) !important;
     }
 }
-
 .el-menu-vertical-demo li {
     font-size: 14px !important;
 }
-
 //修改一级样式表
 .el-menu-vertical-demo li.el-submenu {
     &.is-active .el-submenu__title {
         background-color: $maincolor !important;
+    }
+}
+
+.close {
+    .el-submenu{
+        &.isopend{
+            > .el-submenu__title{
+                background-color: $maincolor !important;
+            }
+        }
+    } 
+}
+
+.el-menu--vertical{
+    .el-menu{
+        background-color: $maincolor !important;
+    }
+    .el-menu-item{
+        line-height: 56px;
+    }
+    .el-menu-item:hover{
+        background-color: $maincolor !important; 
     }
 }

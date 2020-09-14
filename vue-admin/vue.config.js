@@ -14,10 +14,23 @@ module.exports = {
             chunks: ['chunk-vendors', 'chunk-common', 'index'] // 在这个页面中包含的块，默认情况下会包含,提取出来的通用 chunk 和 vendor chunk
         }
     },
+    chainWebpack: config => {
+        // 设置svg
+        const svgRule = config.module.rule("svg")
+        svgRule.uses.clear()
+        svgRule
+            .use("svg-sprite-loader")
+            .loader("svg-sprite-loader")
+            .options({
+                symbolId: "icon-[name]",
+                include: ["./src/icon"]
+            })
+    },
     configureWebpack: {
         //定义路径别名
         resolve: {
             alias: {
+                'vue$': 'vue/dist/vue.js',
                 'assets': '@/assets',
                 'components': '@/components',
                 'api': '@/api',
@@ -47,7 +60,7 @@ module.exports = {
         proxy: {  // 设置代理
             '/devapi': {
                 /* 目标代理服务器地址 */
-                target: 'http://www.web-jshtml.cn/productapi',
+                target: 'http://www.web-jshtml.cn/productapi/token',
                 /* 允许跨域 */
                 changeOrigin: true,
                 ws: true,
