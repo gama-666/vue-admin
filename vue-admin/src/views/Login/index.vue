@@ -86,7 +86,7 @@ import {
   validataPassword,
   validataCode
 } from "@/utils/validata";
-import { setToken } from "@/utils/app.js";
+import { setToken, setUsername } from "@/utils/app.js";
 import { ref, reactive, onMounted } from "@vue/composition-api";
 export default {
   name: "login",
@@ -277,7 +277,9 @@ export default {
       Login(requestData)
         .then(response => {
           let data = response.data;
+          root.$store.commit("app/GET_USERNAME");
           setToken(data.data.token);
+          setUsername(data.data.username);
           root.$message({
             message: data.message,
             type: "success"

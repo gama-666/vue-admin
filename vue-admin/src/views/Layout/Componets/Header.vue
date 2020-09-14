@@ -7,7 +7,7 @@
       <div class="pull-left user-Info">
         <svg-icon iconName="userInfo" :className="userClass" />
       </div>
-      <div class="user pull-left">4941@qq.com</div>
+      <div class="user pull-left">{{username}}</div>
       <div class="pull-left header-icon" @click="exit">
         <svg-icon iconName="exit" :className="exitClass" />
       </div>
@@ -15,8 +15,8 @@
   </div>
 </template>
 <script>
-import { computed, ref } from "@vue/composition-api";
-import { deleteToken } from "@/utils/app.js";
+import { computed, ref, onMounted } from "@vue/composition-api";
+import { removeToken, removeUsername } from "@/utils/app.js";
 export default {
   name: "layoutHeader",
   setup(props, { root }) {
@@ -31,15 +31,34 @@ export default {
     const navMenuState = () => {
       root.$store.commit("app/SET_COLLPASE");
     };
+    const username = root.$store.state.app.username;
+  
     //退出，删除Cookie
     const exit = () => {
-      deleteToken();
-      root.$router.push({
-        name: "Login"
-      });
+      root
+        .$confirm("确定退出登录?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "success",
+          closeOnPressEscape: true
+        })
+        .then(() => {
+          removeToken();
+          removeUsername();
+          root.$router.push({
+            name: "Login"
+          });
+        })
+        .catch(() => {
+          root.$message({
+            type: "info",
+            message: "已取消退出"
+          });
+        });
     };
 
     return {
+      username,
       menuClass,
       exitClass,
       userClass,
