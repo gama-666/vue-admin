@@ -270,7 +270,9 @@ export default {
           });
           toggleMenu(menuTab[0]);
         })
-        .catch(error => {});
+        .catch(error => {
+            console.log(error)
+        });
     };
     //登录
     const signIn = requestData => {
@@ -289,7 +291,9 @@ export default {
             name: "Console"
           });
         })
-        .catch(error => {});
+        .catch(error => {
+          console.log(error)
+        });
     };
 
     //、重置表单

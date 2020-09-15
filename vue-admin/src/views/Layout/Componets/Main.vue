@@ -22,7 +22,7 @@ export default {
   // bottom: 0;
   // border-bottom: none;
   height: 100vh;
-  background-color: #f7f7f7;
+  background-color: #dedede;
 }
 .open {
   .main-content {
@@ -39,7 +39,7 @@ export default {
   height: 100%;
   padding-top: $layoutHeader + 30;
   padding-left: $navMenu + 30;
-  padding-right: 30px;
+  padding-right: 40px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   @include webkit(transition, all 0.3s ease 0s);
