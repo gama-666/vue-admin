@@ -62,26 +62,26 @@
           <el-button type="danger" class="search">搜索</el-button>
         </el-col>
         <el-col :span="2">
-          <el-button class="pull-right" type="danger" @click="dialog_info=true">新增</el-button>
+          <el-button class="pull-right" type="danger" @click="dialogState">新增</el-button>
         </el-col>
       </el-row>
     </el-form>
     <!-- 表格数据 -->
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table class="table" :data="tableData" border style="width: 100%">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="title" label="标题" width="700"></el-table-column>
       <el-table-column prop="category" label="类型" width="130"></el-table-column>
       <el-table-column prop="date" label="日期" width="237"></el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
-        <el-button type="success" size="small">编辑</el-button>
-        <el-button type="danger" size="small">删除</el-button>
+        <el-button type="danger" size="small" @click="remove">删除</el-button>
+        <el-button type="success" size="small" @click="dialogState">编辑</el-button>
       </el-table-column>
     </el-table>
     <!-- 底部分页 -->
     <el-row class="page">
       <el-col :span="12">
-        <el-button type="success" size="small">批量删除</el-button>
+        <el-button type="success" size="small" @click="removeAll">批量删除</el-button>
       </el-col>
       <el-pagination
         class="pull-right"
@@ -95,23 +95,23 @@
       ></el-pagination>
     </el-row>
     <!-- 新增弹出框 -->
-    <Popup :flag.sync="dialog_info" />
+    <Popup />
   </div>
 </template>
 <script>
 import Popup from "./dialog/popup";
-import { reactive, ref } from "@vue/composition-api";
+import { computed, reactive, ref } from "@vue/composition-api";
 export default {
   name: "category",
   components: { Popup },
-  setup() {
+  setup(props, { root }) {
     /*数据* ***************************/
     //、基础数据
-    const dialog_info = ref(false); //信息弹窗
     const search_keyword = ref("id"); //搜索关键字
     const default_keyword = ref(""); //输入框默认内容
     const catagory_value = ref(""); //类型
     const keyword_value = ref(""); //关键字
+
     //、类型数据
     const options = reactive([
       {
@@ -168,9 +168,34 @@ export default {
       console.log(`当前页: ${val}`);
     };
 
+    //、新增弹框的显示
+    const dialogState = () => {
+      root.$store.commit("dialog/SHOW_DIALOG");
+    };
+
+    //、删除弹框的显示
+    const remove = () => {
+      root.confirm({
+        content: "确定删除当前信息，确定后无法恢复！！",
+        fn: confirmDelete,
+        id:111
+      });
+    };
+    //、批量删除
+    const removeAll = () => {
+      root.confirm({
+        content: "确定删除选择的信息，确定后将无法恢复！！",
+        fn: confirmDelete,
+        id:222
+      });
+    };
+    //、确认删除的回调
+    const confirmDelete = (id) => {
+      console.log("删除成功!!",id)
+    };
+
     return {
       //、基础数据
-      dialog_info,
       default_keyword,
       search_keyword,
       catagory_value,
@@ -181,7 +206,10 @@ export default {
       tableData,
       //函数
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      dialogState,
+      remove,
+      removeAll
     };
   }
 };
@@ -199,6 +227,9 @@ export default {
   .wrap-content_1 {
     margin-left: 70px;
   }
+}
+.table {
+  margin-top: 25px;
 }
 .date {
   margin-left: 20px;

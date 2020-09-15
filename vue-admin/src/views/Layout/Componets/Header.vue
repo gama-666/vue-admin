@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-import { computed, ref, onMounted } from "@vue/composition-api";
+import { ref } from "@vue/composition-api";
 import { removeToken, removeUsername } from "@/utils/app.js";
 export default {
   name: "layoutHeader",
@@ -32,7 +32,7 @@ export default {
       root.$store.commit("app/SET_COLLPASE");
     };
     const username = root.$store.state.app.username;
-  
+
     //退出，删除Cookie
     const exit = () => {
       root
