@@ -32,8 +32,6 @@ module.exports = {
             alias: {
                 'vue$': 'vue/dist/vue.js',
                 'assets': '@/assets',
-                'components': '@/components',
-                'api': '@/api',
                 'views': '@/views'
             }
         }

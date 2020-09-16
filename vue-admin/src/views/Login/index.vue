@@ -79,7 +79,7 @@
 </template>
 <script>
 import sha1 from "js-sha1";
-import { GetSms, Register, Login } from "api/login.js";
+import { GetSms, Register, Login } from "@/api/login.js";
 import {
   stripscript,
   validataEmail,
