@@ -22,8 +22,26 @@ export function GetCategory(data) {
 export function GetCategoryAll(data) {
     return http.request({
         method: 'post',
-        url: '/news/getCategoryAll/ ',
+        url: '/news/getCategoryAll/',
         data
     })
 }
 
+
+/* 删除信息分类 */
+export function DeleteCategory(data) {
+    return http.request({
+        method: 'post',
+        url: '/news/deleteCategory/',
+        data
+    })
+}
+
+/* 修改信息分类 */
+export function EditCategory(data) {
+    return http.request({
+        method: 'post',
+        url: '/news/editCategory/',
+        data
+    })
+}
