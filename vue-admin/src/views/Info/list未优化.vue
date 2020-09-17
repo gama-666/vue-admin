@@ -67,7 +67,7 @@
   </div>
 </template>
 <script>
-import { onMounted, reactive, ref, watch } from "@vue/composition-api";
+import { onMounted, reactive, ref } from "@vue/composition-api";
 import {
   AddFirstCategory,
   GetCategory,
@@ -75,12 +75,9 @@ import {
   EditCategory,
   AddChildrenCategory
 } from "@/api/news";
-import { common } from "@/api/common";
 export default {
   name: "infolist",
   setup(props, { root }) {
-    //、获取分类列表，公用方法
-    const { getInfoCategory: getCategory, categoryData } = common();
     /*数据 *************************************************/
     const show_first = ref(true);
     const show_sec = ref(true);
@@ -204,6 +201,15 @@ export default {
         })
         .catch(error => {});
     };
+    //、获取分类列表
+    const getCategory = () => {
+      GetCategory({})
+        .then(response => {
+          let data = response.data.data.data;
+          category.item = data;
+        })
+        .catch(error => {});
+    };
     //、删除分类弹框的显示
     const deleteCategoryConfirm = id => {
       root.confirm({
@@ -218,19 +224,12 @@ export default {
         id
       });
     };
-
     /*生命周期 **********************************************/
     //、挂载完成时执行，（页面DOM元素完成，实例完成）
     onMounted(() => {
-      getCategory(); //获取分类列表
+      getCategory();
     });
-    /*watch 监听数据变化********/
-    watch(
-      () => categoryData.item,
-      value => {
-        category.item = value;
-      }
-    );
+
     return {
       //ref
       title,

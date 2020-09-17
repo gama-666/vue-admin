@@ -45,3 +45,11 @@ export function EditCategory(data) {
         data
     })
 }
+
+export function AddChildrenCategory(data) {
+    return http.request({
+        method: 'post',
+        url: '/news/addChildrenCategory/',
+        data
+    })
+}

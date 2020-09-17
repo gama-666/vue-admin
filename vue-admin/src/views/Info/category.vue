@@ -5,15 +5,15 @@
         <!--类目-->
         <el-col :span="4">
           <div class="label-wrap">
-            <label for>类型:</label>
+            <label for>分类:</label>
             <div class="wrap-content">
               <el-form-item>
                 <el-select v-model="catagory_value" filterable placeholder="请选择" label="活动名称">
                   <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    v-for="item in options.category"
+                    :key="item.id"
+                    :label="item.category_name"
+                    :value="item.id"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -99,34 +99,32 @@
   </div>
 </template>
 <script>
+import { GetCategory } from "@/api/news";
 import Popup from "./dialog/popup";
-import { computed, reactive, ref } from "@vue/composition-api";
+import { common } from "@/api/common";
+import {
+  computed,
+  onMounted,
+  reactive,
+  ref,
+  watch
+} from "@vue/composition-api";
 export default {
   name: "category",
   components: { Popup },
   setup(props, { root }) {
+    //、获取数据，引用公用方法
+    const { getInfoCategory, categoryData } = common();
     /*数据* ***************************/
     //、基础数据
     const search_keyword = ref("id"); //搜索关键字
     const default_keyword = ref(""); //输入框默认内容
     const catagory_value = ref(""); //类型
     const keyword_value = ref(""); //关键字
-
     //、类型数据
-    const options = reactive([
-      {
-        value: "选项1",
-        label: "国际信息"
-      },
-      {
-        value: "选项2",
-        label: "国内信息"
-      },
-      {
-        value: "选项3",
-        label: "行业信息 "
-      }
-    ]);
+    const options = reactive({
+      category: []
+    });
     // 、关键字
     const keyword = reactive([
       {
@@ -167,18 +165,16 @@ export default {
     const handleCurrentChange = val => {
       console.log(`当前页: ${val}`);
     };
-
     //、新增弹框的显示
     const dialogState = () => {
       root.$store.commit("dialog/SHOW_DIALOG");
     };
-
     //、删除弹框的显示
     const remove = () => {
       root.confirm({
         content: "确定删除当前信息，确定后无法恢复！！",
         fn: confirmDelete,
-        id:111
+        id: 111
       });
     };
     //、批量删除
@@ -186,14 +182,25 @@ export default {
       root.confirm({
         content: "确定删除选择的信息，确定后将无法恢复！！",
         fn: confirmDelete,
-        id:222
+        id: 222
       });
     };
     //、确认删除的回调
-    const confirmDelete = (id) => {
-      console.log("删除成功!!",id)
+    const confirmDelete = id => {
+      console.log("删除成功!!", id);
     };
 
+    /*生命周期 **********************************************/
+    onMounted(() => {
+      getInfoCategory();
+    });
+    /*watch 监听数据变化********/
+    watch(
+      () => categoryData.item,
+      value => {
+        options.category = value;
+      }
+    );
     return {
       //、基础数据
       default_keyword,
