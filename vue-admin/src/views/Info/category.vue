@@ -67,11 +67,17 @@
       </el-row>
     </el-form>
     <!-- 表格数据 -->
-    <el-table class="table" :data="table_Data.item" border style="width: 100%">
+    <el-table
+      class="table"
+      :data="table_Data.item"
+      v-loading="loadingData"
+      border
+      style="width: 100%"
+    >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="title" label="标题" width="700"></el-table-column>
-      <el-table-column prop="categoryId" label="类型" width="130"></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="237"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="130" :formatter="toCategory"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="237" :formatter="toDate"></el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <el-button type="danger" size="small" @click="remove">删除</el-button>
@@ -102,6 +108,7 @@
 import { GetCategory, GetList } from "@/api/news";
 import Popup from "./dialog/popup";
 import { common } from "@/api/common";
+import { timestampToTime } from "@/utils/common";
 import {
   computed,
   onMounted,
@@ -122,6 +129,7 @@ export default {
     const catagory_value = ref(""); //类型
     const keyword_value = ref(""); //关键字
     const total = ref(0); //条数统计
+    const loadingData = ref(false); //信息列表请求显示loading状态，请求完成后显示数据
     //、页码
     const page = reactive({
       pageNumber: 1,
@@ -150,14 +158,12 @@ export default {
     //、每页显示条数
     const handleSizeChange = val => {
       page.pageSize = val;
-    
-      console.log(page.pageSize);
+      getlist();
     };
     //、页码(当前页)
     const handleCurrentChange = val => {
       page.pageNumber = val;
-      getlist()
-      // console.log(page.pageNumber);
+      getlist();
     };
     //、新增弹框的显示
     const dialogState = () => {
@@ -194,17 +200,28 @@ export default {
         pageNumber: page.pageNumber, //页码（number）*
         pageSize: page.pageSize //条数（number）*
       };
+      loadingData.value = true; //加载状态
       GetList(requestData)
         .then(response => {
           let data = response.data.data.data;
           table_Data.item = data;
           total.value = response.data.data.total;
+          loadingData.value = false;
         })
         .catch(error => {
+          loadingData.value = false;
           console.log(error);
         });
     };
-
+    //时间戳转换为日期时间，
+    const toDate = row => timestampToTime(row.createDate);
+    //类型匹配
+    const toCategory = row => {
+      let type = options.category.filter(item => {
+        return item.id == row.categoryId;
+      })[0].category_name;
+      return type;
+    };
     /*生命周期 **********************************************/
     onMounted(() => {
       //获取分类
@@ -226,6 +243,7 @@ export default {
       catagory_value,
       keyword_value,
       total,
+      loadingData,
       //对象数据
       options,
       keyword,
@@ -235,7 +253,9 @@ export default {
       handleCurrentChange,
       dialogState,
       remove,
-      removeAll
+      removeAll,
+      toDate,
+      toCategory
     };
   }
 };

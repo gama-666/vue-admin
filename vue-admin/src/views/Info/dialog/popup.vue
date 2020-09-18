@@ -73,6 +73,13 @@ export default {
     };
     //、提交按钮
     const submit = () => {
+      if (!form.type) {
+        root.$message({
+          message: "分类名称不能为空",
+          type: "error"
+        });
+        return false;
+      }
       root.$store.commit("dialog/HIDE_DIALOG");
       let requestData = {
         categoryId: form.type,
