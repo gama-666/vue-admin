@@ -67,11 +67,11 @@
       </el-row>
     </el-form>
     <!-- 表格数据 -->
-    <el-table class="table" :data="tableData" border style="width: 100%">
+    <el-table class="table" :data="table_Data.item" border style="width: 100%">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="title" label="标题" width="700"></el-table-column>
-      <el-table-column prop="category" label="类型" width="130"></el-table-column>
-      <el-table-column prop="date" label="日期" width="237"></el-table-column>
+      <el-table-column prop="categoryId" label="类型" width="130"></el-table-column>
+      <el-table-column prop="createDate" label="日期" width="237"></el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <el-button type="danger" size="small" @click="remove">删除</el-button>
@@ -91,15 +91,15 @@
         :page-sizes="[10, 20, 30, 40]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
       ></el-pagination>
     </el-row>
     <!-- 新增弹出框 -->
-    <Popup />
+    <Popup :category="options.category" />
   </div>
 </template>
 <script>
-import { GetCategory } from "@/api/news";
+import { GetCategory, GetList } from "@/api/news";
 import Popup from "./dialog/popup";
 import { common } from "@/api/common";
 import {
@@ -121,9 +121,19 @@ export default {
     const default_keyword = ref(""); //输入框默认内容
     const catagory_value = ref(""); //类型
     const keyword_value = ref(""); //关键字
+    const total = ref(0); //条数统计
+    //、页码
+    const page = reactive({
+      pageNumber: 1,
+      pageSize: 10
+    });
     //、类型数据
     const options = reactive({
       category: []
+    });
+    //、表格数据
+    const table_Data = reactive({
+      item: []
     });
     // 、关键字
     const keyword = reactive([
@@ -136,34 +146,18 @@ export default {
         label: "标题"
       }
     ]);
-    //、表格数据
-    const tableData = reactive([
-      {
-        title: "上海市普陀区金沙江路 1518 弄",
-        category: "国内信息",
-        date: "2016-05-02",
-        user: "王小虎"
-      },
-      {
-        title: "上海市普陀区金沙江路 1518 弄",
-        category: "国际信息",
-        date: "2016-05-02",
-        user: "王小虎"
-      },
-      {
-        title: "上海市普陀区金沙江路 1518 弄",
-        category: "行业信息",
-        date: "2016-05-02",
-        user: "王小虎"
-      }
-    ]);
-
     /*函数* **********************************/
+    //、每页显示条数
     const handleSizeChange = val => {
-      console.log(`每页 ${val} 条`);
+      page.pageSize = val;
+    
+      console.log(page.pageSize);
     };
+    //、页码(当前页)
     const handleCurrentChange = val => {
-      console.log(`当前页: ${val}`);
+      page.pageNumber = val;
+      getlist()
+      // console.log(page.pageNumber);
     };
     //、新增弹框的显示
     const dialogState = () => {
@@ -189,10 +183,34 @@ export default {
     const confirmDelete = id => {
       console.log("删除成功!!", id);
     };
+    //、获取信息列表接口请求
+    const getlist = () => {
+      let requestData = {
+        categoryId: "", //分类ID（number）
+        startTiem: "", //开始时间（string）
+        endTime: "", //结束时间（string）
+        title: "", //标题（string）
+        id: "", //信息ID（number）
+        pageNumber: page.pageNumber, //页码（number）*
+        pageSize: page.pageSize //条数（number）*
+      };
+      GetList(requestData)
+        .then(response => {
+          let data = response.data.data.data;
+          table_Data.item = data;
+          total.value = response.data.data.total;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
 
     /*生命周期 **********************************************/
     onMounted(() => {
+      //获取分类
       getInfoCategory();
+      //获取信息列表
+      getlist();
     });
     /*watch 监听数据变化********/
     watch(
@@ -202,15 +220,16 @@ export default {
       }
     );
     return {
-      //、基础数据
+      //基础数据
       default_keyword,
       search_keyword,
       catagory_value,
       keyword_value,
+      total,
       //对象数据
       options,
       keyword,
-      tableData,
+      table_Data,
       //函数
       handleSizeChange,
       handleCurrentChange,

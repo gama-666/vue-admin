@@ -160,7 +160,7 @@ export default {
             /*请求分类接口页面需刷新显示的处理方法*/
             getCategory(); //、方法1：重新再请求一次分类接口（缺点：浪费资源）
             // category.item.push(response.data.data); //、方法2：直接push，请求接口后的数据
-            // form.categoryName = "";
+            form.categoryName = "";
             submit_loading.value = false;
           }
         })
