@@ -123,6 +123,7 @@ export default {
       show_sec.value = false;
       first_disabled.value = false;
       submit_disabled.value = false;
+      console.log(item.category_name);
       if (item) {
         form.categoryName = item.category_name;
         form.categoryId = item.id;

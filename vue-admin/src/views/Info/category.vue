@@ -25,14 +25,16 @@
           <div class="label-wrap date">
             <label for>日期:</label>
             <div class="wrap-content">
-              <el-form-item>
-                <el-date-picker
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                ></el-date-picker>
-              </el-form-item>
+              <el-date-picker
+                style="width:100%"
+                v-model="dete_value"
+                type="datetimerange"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['12:00:00','08:00:00']"
+              ></el-date-picker>
             </div>
           </div>
         </el-col>
@@ -42,7 +44,7 @@
             <label for>关键字:</label>
             <div class="wrap-content_1">
               <el-form-item>
-                <el-select v-model="keyword_value" filterable :placeholder="search_keyword">
+                <el-select v-model="search_key" filterable :placeholder="search_keyword">
                   <el-option
                     v-for="item in keyword"
                     :key="item.value"
@@ -59,7 +61,7 @@
           <el-input v-model="default_keyword" class="search_keyword" placeholder="请输入内容"></el-input>
         </el-col>
         <el-col :span="2">
-          <el-button type="danger" class="search">搜索</el-button>
+          <el-button type="danger" class="search" @click="search">搜索</el-button>
         </el-col>
         <el-col :span="2">
           <el-button class="pull-right" type="danger" @click="dialogState">新增</el-button>
@@ -73,15 +75,19 @@
       v-loading="loadingData"
       border
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
+      >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="title" label="标题" width="700"></el-table-column>
       <el-table-column prop="categoryId" label="类型" width="130" :formatter="toCategory"></el-table-column>
       <el-table-column prop="createDate" label="日期" width="237" :formatter="toDate"></el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
-        <el-button type="danger" size="small" @click="remove">删除</el-button>
-        <el-button type="success" size="small" @click="dialogState">编辑</el-button>
+        <template slot-scope="scope">
+          <el-button type="danger" size="small" @click="remove(scope.row.id)">删除</el-button>
+          <el-button type="success" size="small" @click="dialogState">编辑</el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 底部分页 -->
@@ -105,7 +111,7 @@
   </div>
 </template>
 <script>
-import { GetCategory, GetList } from "@/api/news";
+import { GetCategory, GetList, DeleteInfo } from "@/api/news";
 import Popup from "./dialog/popup";
 import { common } from "@/api/common";
 import { timestampToTime } from "@/utils/common";
@@ -127,9 +133,12 @@ export default {
     const search_keyword = ref("id"); //搜索关键字
     const default_keyword = ref(""); //输入框默认内容
     const catagory_value = ref(""); //类型
-    const keyword_value = ref(""); //关键字
+    const search_key = ref(""); //关键字
     const total = ref(0); //条数统计
     const loadingData = ref(false); //信息列表请求显示loading状态，请求完成后显示数据
+    const deleteInfoId = ref("");
+    const dete_value = ref("");
+
     //、页码
     const page = reactive({
       pageNumber: 1,
@@ -146,14 +155,15 @@ export default {
     // 、关键字
     const keyword = reactive([
       {
-        value: "选项1",
+        value: "id",
         label: "ID"
       },
       {
-        value: "选项2",
+        value: "title",
         label: "标题"
       }
     ]);
+
     /*函数* **********************************/
     //、每页显示条数
     const handleSizeChange = val => {
@@ -169,37 +179,85 @@ export default {
     const dialogState = () => {
       root.$store.commit("dialog/SHOW_DIALOG");
     };
-    //、删除弹框的显示
-    const remove = () => {
+    //、单个删除
+    const remove = id => {
+      deleteInfoId.value = [id];
       root.confirm({
         content: "确定删除当前信息，确定后无法恢复！！",
-        fn: confirmDelete,
-        id: 111
+        fn: confirmDelete
       });
     };
     //、批量删除
     const removeAll = () => {
+      if (!deleteInfoId.value || deleteInfoId.value.length == 0) {
+        root.$message({
+          message: "请选择要删除的数据",
+          type: "error"
+        });
+        return false;
+      }
       root.confirm({
         content: "确定删除选择的信息，确定后将无法恢复！！",
-        fn: confirmDelete,
-        id: 222
+        fn: confirmDelete
       });
     };
-    //、确认删除的回调
-    const confirmDelete = id => {
-      console.log("删除成功!!", id);
+    //、删除的回调
+    const confirmDelete = value => {
+      DeleteInfo({ id: deleteInfoId.value })
+        //删除成功
+        .then(response => {
+          let requestData = response.data;
+          root.$message({
+            message: requestData.message,
+            type: "success"
+          });
+          deleteInfoId.value = "";
+          getlist();
+        })
+        //删除失败
+        .catch(error => {
+          root.$message({
+            message: requestData.message,
+            type: "error"
+          });
+        });
     };
-    //、获取信息列表接口请求
-    const getlist = () => {
+    //单选按钮，保存选择值到数组中，批量删除需要选中值
+    const handleSelectionChange = val => {
+      let id = val.map(item => item.id);
+      deleteInfoId.value = id;
+    };
+    //搜索
+    const search = _ => getlist();
+    const fromData = () => {
       let requestData = {
         categoryId: "", //分类ID（number）
         startTiem: "", //开始时间（string）
         endTime: "", //结束时间（string）
-        title: "", //标题（string）
+        title: "", //关键字标题（string）
         id: "", //信息ID（number）
         pageNumber: page.pageNumber, //页码（number）*
         pageSize: page.pageSize //条数（number）*
       };
+      //分类ID（number）
+      if (catagory_value.value) {
+        requestData.categoryId = catagory_value.value;
+      }
+      //开始时间（string）结束时间（string）
+      if (dete_value.value.length > 0) {
+        requestData.startTiem = dete_value.value[0];
+        requestData.endTime = dete_value.value[1];
+      }
+      //关键字标题（string）
+      if (default_keyword.value) {
+        requestData.id = default_keyword.value;
+      }
+      return requestData;
+    };
+    //、获取信息列表接口请求
+    const getlist = () => {
+      let requestData = fromData();
+      console.log(requestData);
       loadingData.value = true; //加载状态
       GetList(requestData)
         .then(response => {
@@ -210,7 +268,6 @@ export default {
         })
         .catch(error => {
           loadingData.value = false;
-          console.log(error);
         });
     };
     //时间戳转换为日期时间，
@@ -241,9 +298,10 @@ export default {
       default_keyword,
       search_keyword,
       catagory_value,
-      keyword_value,
+      search_key,
       total,
       loadingData,
+      dete_value,
       //对象数据
       options,
       keyword,
@@ -255,7 +313,9 @@ export default {
       remove,
       removeAll,
       toDate,
-      toCategory
+      toCategory,
+      handleSelectionChange,
+      search
     };
   }
 };

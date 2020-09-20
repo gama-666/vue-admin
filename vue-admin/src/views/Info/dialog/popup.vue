@@ -94,6 +94,9 @@ export default {
             message: data.message,
             type: "success"
           });
+          form.type = "";
+          form.title = "";
+          form.content = "";
         })
         .catch(error => {
           console.log(error);

@@ -47,22 +47,22 @@ const routes = [{
     icon: "info"
   },
   component: () => import("../views/Layout/index.vue"),
-  children: [{
-    path: "/infoList",
-    name: "InfoList",
-    meta: {
-      name: "信息列表"
-    },
-    component: () => import("../views/Info/list.vue"),
-  },
-  {
-    path: "/infoCategory",
-    name: "InfoCategory",
-    meta: {
-      name: "信息分类"
-    },
-    component: () => import("../views/Info/category.vue"),
-  },
+  children: [
+    {
+      path: "/infoCategory",
+      name: "InfoCategory",
+      meta: {
+        name: "信息分类"
+      },
+      component: () => import("../views/Info/category.vue"),
+    }, {
+      path: "/infoList",
+      name: "InfoList",
+      meta: {
+        name: "信息列表"
+      },
+      component: () => import("../views/Info/index.vue"),
+    }
   ]
 },
 {

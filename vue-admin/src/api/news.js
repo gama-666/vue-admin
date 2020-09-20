@@ -50,6 +50,10 @@ export function AddChildrenCategory(data) {
 }
 
 
+
+
+/***************************************************/ 
+
 //新增信息内容
 export function GetList(data) {
     return http.request({
@@ -58,13 +62,20 @@ export function GetList(data) {
         data
     })
 }
-
-
-//新增信息内容
+//添加信息内容
 export function AddInfo(data) {
     return http.request({
         method: 'post',
         url: '/news/add/',
+        data
+    })
+}
+
+//添加信息内容
+export function DeleteInfo(data) {
+    return http.request({
+        method: 'post',
+        url: '/news/deleteInfo/',
         data
     })
 }
