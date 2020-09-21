@@ -6,11 +6,13 @@
       <el-row :gutter="30">
         <el-col :span="8">
           <div class="list-wrap">
-            <div class="infoList" v-for="item in category.item" :key="item.id">
+            <div class="infoList" v-for="(item,index) in category.item" :key="item.id">
               <!-- 一级分类 -->
               <h4>
-                <svg-icon iconName="plus" />
-                {{item.category_name}}
+                <div @click="isOpen(item)">
+                  <svg-icon iconName="plus" />
+                  {{item.category_name}}
+                </div>
                 <div class="button-group">
                   <el-button
                     size="small"
@@ -28,12 +30,17 @@
                 </div>
               </h4>
               <!-- 子级分类 -->
-              <ul v-if="item.children">
+              <ul v-if="item.children" :class="category.item[index].isOpen?'open':'retract'">
                 <li v-for="childrenItem in item.children" :key="childrenItem.id">
                   {{childrenItem.category_name}}
                   <div class="button-group">
-                    <el-button size="small" type="danger" round>编辑</el-button>
-                    <el-button size="small" round>删除</el-button>
+                    <el-button
+                      size="small"
+                      type="danger"
+                      @click="editChildren({childrenItem,type:'category_first_edit'})"
+                      round
+                    >编辑</el-button>
+                    <el-button size="small" round @click="deleteCategoryConfirm(childrenItem.id)">删除</el-button>
                   </div>
                 </li>
               </ul>
@@ -70,7 +77,6 @@
 import { onMounted, reactive, ref, watch } from "@vue/composition-api";
 import {
   AddFirstCategory,
-  GetCategory,
   DeleteCategory,
   EditCategory,
   AddChildrenCategory
@@ -80,7 +86,7 @@ export default {
   name: "infolist",
   setup(props, { root }) {
     //、获取分类列表，公用方法
-    const { getInfoCategory: getCategory, categoryData } = common();
+    const { getCategoryAll, categoryData } = common();
     /*数据 *************************************************/
     const show_first = ref(true);
     const show_sec = ref(true);
@@ -103,6 +109,10 @@ export default {
       item: []
     });
     /*函数 **************************************************/
+    const isOpen = item => {
+      let i = category.item.findIndex(value => value.id == item.id);
+      category.item[i].isOpen = !category.item[i].isOpen;
+    };
     //1、添加一级分类
     const addFirst = ({ item, type }) => {
       composeFn(item, type, "添加一级菜单名称");
@@ -115,6 +125,11 @@ export default {
     const editCatagory = ({ item, type }) => {
       composeFn(item, type, "编辑一级菜单分类名称");
     };
+    //4、修改子级分类列表
+    const editChildren = ({ childrenItem, type }) => {
+      composeFn(childrenItem, type, "编辑子级菜单分类名称");
+    };
+
     const composeFn = (item, type, value) => {
       submit_button_type.value = type;
       title.value = value;
@@ -167,7 +182,7 @@ export default {
               type: "success"
             });
             /*请求分类接口页面需刷新显示的处理方法*/
-            getCategory(); //、方法1：重新再请求一次分类接口（缺点：浪费资源）
+            getCategoryAll(); //、方法1：重新再请求一次分类接口（缺点：浪费资源）
             // category.item.push(response.data.data); //、方法2：直接push，请求接口后的数据
             form.categoryName = "";
             submit_loading.value = false;
@@ -192,7 +207,7 @@ export default {
             message: data.message,
             type: "success"
           });
-          getCategory();
+          getCategoryAll();
         })
         .catch(error => {
           console.log(error);
@@ -210,6 +225,7 @@ export default {
             message: data.message,
             type: "success"
           });
+          getCategoryAll();
           form.categoryName = "";
         })
         .catch(error => {});
@@ -234,26 +250,29 @@ export default {
         categoryName: form.secategoryName,
         parentId: form.categoryId
       };
-      console.log(responseData);
       AddChildrenCategory(responseData).then(response => {
         let data = response.data;
         root.$message({
           message: data.message,
           type: "success"
         });
-        getCategory()
+        form.secategoryName = "";
+        getCategoryAll();
       });
     };
 
     /*生命周期 **********************************************/
     //、挂载完成时执行，（页面DOM元素完成，实例完成）
     onMounted(() => {
-      getCategory(); //获取分类列表
+      getCategoryAll(); //获取分类列表
     });
     /*watch 监听数据变化********/
     watch(
       () => categoryData.item,
       value => {
+        value.forEach(item => {
+          item.isOpen = true;
+        });
         category.item = value;
       }
     );
@@ -274,7 +293,9 @@ export default {
       addFirst,
       addChildren,
       deleteCategoryConfirm,
-      editCatagory
+      editCatagory,
+      editChildren,
+      isOpen
     };
   }
 };
@@ -304,6 +325,12 @@ export default {
     &::before {
       bottom: 23px;
     }
+  }
+  .open {
+    display: block;
+  }
+  .retract {
+    display: none;
   }
 }
 

@@ -113,7 +113,7 @@
   </div>
 </template>
 <script>
-import { GetCategory, GetList, DeleteInfo } from "@/api/news";
+import { GetList, DeleteInfo } from "@/api/news";
 import Popup from "./dialog/popup";
 import Edit from "./dialog/edit";
 import { common } from "@/api/common";
