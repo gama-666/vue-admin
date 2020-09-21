@@ -1,8 +1,8 @@
 <template>
   <el-dialog
-    title="新增"
+    title="编辑"
     @close="dialogVisible"
-    :visible="dialogInfo"
+    :visible="dialogEdit"
     @open="openDialog"
     width="580px"
   >
@@ -38,7 +38,7 @@
   </el-dialog>
 </template>
 <script>
-import { AddInfo } from "@/api/news";
+import { EditInfo, GetList } from "@/api/news";
 import { reactive, ref, computed } from "@vue/composition-api";
 import { onMounted } from "@vue/composition-api";
 export default {
@@ -47,11 +47,14 @@ export default {
     category: {
       type: Array,
       default: () => {}
+    },
+    id: {
+      type: String
     }
   },
-  setup(props, { root ,emit}) {
-    //、监听值得变化，新增对话框的显示隐藏
-    const dialogInfo = computed(() => root.$store.state.dialog.dialogInfo);
+  setup(props, { root, emit }) {
+    //、监听值得变化，编辑对话框的显示隐藏
+    const dialogEdit = computed(() => root.$store.state.dialog.dialogEdit);
     /*数据*/
     const formLabelWidth = ref("60px");
     const categoryData = reactive({
@@ -62,15 +65,31 @@ export default {
       title: "",
       content: ""
     });
+
     /*函数 */
-    //、当点击新增按钮时，修改状态值
+    //、当点击编辑按钮时，修改状态值
     const dialogVisible = () => {
-      root.$store.commit("dialog/HIDE_DIALOG");
+      root.$store.commit("dialog/HIDE_EDIT_DIALOG");
     };
-    //、新增窗口打开时，获取从父组件(category)传过来的值
+    //、编辑窗口打开时，获取从父组件(category)传过来的值
     const openDialog = _ => {
       categoryData.item = props.category;
+      getInfo();
     };
+    const getInfo = () => {
+      let requestData = {
+        id: props.id,
+        pageNumber: 1,
+        pageSize: 1
+      };
+      GetList(requestData).then(response => {
+        let data = response.data.data.data[0];
+        form.type = data.categoryId;
+        form.title = data.title;
+        form.content = data.content;
+      });
+    };
+
     //、提交按钮
     const submit = () => {
       if (!form.type) {
@@ -80,14 +99,15 @@ export default {
         });
         return false;
       }
-      root.$store.commit("dialog/HIDE_DIALOG");
+      root.$store.commit("dialog/HIDE_EDIT_DIALOG");
       let requestData = {
+        id: props.id,
         categoryId: form.type,
         title: form.title,
         content: form.content
       };
-      //添加信息接口请求
-      AddInfo(requestData)
+      //修改信息接口请求
+      EditInfo(requestData)
         .then(response => {
           let data = response.data;
           root.$message({
@@ -97,15 +117,16 @@ export default {
           form.type = "";
           form.title = "";
           form.content = "";
-          emit("getListAdd")
+          emit("getListEdit");
         })
         .catch(error => {
           console.log(error);
         });
     };
+
     //、取消按钮
     const close = () => {
-      root.$store.commit("dialog/HIDE_DIALOG");
+      root.$store.commit("dialog/HIDE_EDIT_DIALOG");
     };
 
     return {
@@ -115,7 +136,7 @@ export default {
       form,
       categoryData,
       // 函数
-      dialogInfo,
+      dialogEdit,
       dialogVisible,
       openDialog,
       submit,

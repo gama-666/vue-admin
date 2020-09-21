@@ -120,15 +120,21 @@ export default {
       title.value = value;
       form.categoryName = "";
       show_first.value = true;
-      show_sec.value = false;
-      first_disabled.value = false;
+      if (type == "category_children_add") {
+        show_sec.value = true;
+        sec_disabled.value = false;
+        first_disabled.value = true;
+      } else {
+        show_sec.value = false;
+        first_disabled.value = false;
+      }
       submit_disabled.value = false;
-      console.log(item.category_name);
       if (item) {
         form.categoryName = item.category_name;
         form.categoryId = item.id;
       }
     };
+
     /*接口部分*/
     //确定按钮
     const submit = () => {
@@ -144,8 +150,10 @@ export default {
       } else if (submit_button_type.value == "category_first_edit") {
         editCategory(); //修改
       } else if ((submit_button_type.value = "category_children_add")) {
+        addChildrenCategory(); //添加子级
       }
     };
+
     //添加一级分类,确定，接口请求
     const addCategory = () => {
       submit_loading.value = true; //确定按钮状态改变
@@ -172,7 +180,7 @@ export default {
           submit_loading.value = false;
         });
     };
-    //修改分类，确定，接口请求
+    //修改一级分类，确定，接口请求
     const editCategory = () => {
       EditCategory({
         categoryName: form.categoryName,
@@ -190,7 +198,7 @@ export default {
           console.log(error);
         });
     };
-    //、删除分类接口请求
+    //、删除一级分类接口请求
     const deleteCategory = id => {
       DeleteCategory({ categoryId: id })
         .then(response => {
@@ -202,10 +210,11 @@ export default {
             message: data.message,
             type: "success"
           });
+          form.categoryName = "";
         })
         .catch(error => {});
     };
-    //、删除分类弹框的显示
+    //、删除一级分类弹框的显示
     const deleteCategoryConfirm = id => {
       root.confirm({
         content: "确定删除当前信息，确定后无法恢复！！",
@@ -217,6 +226,22 @@ export default {
           });
         },
         id
+      });
+    };
+    //、添加子级分类名称
+    const addChildrenCategory = () => {
+      let responseData = {
+        categoryName: form.secategoryName,
+        parentId: form.categoryId
+      };
+      console.log(responseData);
+      AddChildrenCategory(responseData).then(response => {
+        let data = response.data;
+        root.$message({
+          message: data.message,
+          type: "success"
+        });
+        getCategory()
       });
     };
 

@@ -86,7 +86,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="danger" size="small" @click="remove(scope.row.id)">删除</el-button>
-          <el-button type="success" size="small" @click="dialogState">编辑</el-button>
+          <el-button type="success" size="small" @click="dialogEditState(scope.row.id)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -107,12 +107,15 @@
       ></el-pagination>
     </el-row>
     <!-- 新增弹出框 -->
-    <Popup :category="options.category" />
+    <Popup :category="options.category" @getListAdd="getlist" />
+    <!-- 编辑弹出框 -->
+    <Edit :category="options.category" :id="editId" @getListEdit="getlist" />
   </div>
 </template>
 <script>
 import { GetCategory, GetList, DeleteInfo } from "@/api/news";
 import Popup from "./dialog/popup";
+import Edit from "./dialog/edit";
 import { common } from "@/api/common";
 import { timestampToTime } from "@/utils/common";
 import {
@@ -124,7 +127,7 @@ import {
 } from "@vue/composition-api";
 export default {
   name: "category",
-  components: { Popup },
+  components: { Popup, Edit },
   setup(props, { root }) {
     //、获取数据，引用公用方法
     const { getInfoCategory, categoryData } = common();
@@ -138,7 +141,7 @@ export default {
     const loadingData = ref(false); //信息列表请求显示loading状态，请求完成后显示数据
     const deleteInfoId = ref("");
     const dete_value = ref("");
-
+    const editId = ref("111");
     //、页码
     const page = reactive({
       pageNumber: 1,
@@ -175,9 +178,14 @@ export default {
       page.pageNumber = val;
       getlist();
     };
-    //、新增弹框的显示
-    const dialogState = () => {
+    //、新增弹框
+    const dialogState = id => {
       root.$store.commit("dialog/SHOW_DIALOG");
+    };
+    //、编辑弹框
+    const dialogEditState = id => {
+      editId.value = id;
+      root.$store.commit("dialog/SHOW_EDIT_DIALOG");
     };
     //、单个删除
     const remove = id => {
@@ -257,7 +265,6 @@ export default {
     //、获取信息列表接口请求
     const getlist = () => {
       let requestData = fromData();
-      console.log(requestData);
       loadingData.value = true; //加载状态
       GetList(requestData)
         .then(response => {
@@ -302,6 +309,7 @@ export default {
       total,
       loadingData,
       dete_value,
+      editId,
       //对象数据
       options,
       keyword,
@@ -310,8 +318,10 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       dialogState,
+      dialogEditState,
       remove,
       removeAll,
+      getlist,
       toDate,
       toCategory,
       handleSelectionChange,

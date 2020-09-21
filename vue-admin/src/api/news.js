@@ -52,7 +52,7 @@ export function AddChildrenCategory(data) {
 
 
 
-/***************************************************/ 
+/***************************************************/
 
 //新增信息内容
 export function GetList(data) {
@@ -71,7 +71,17 @@ export function AddInfo(data) {
     })
 }
 
-//添加信息内容
+
+//修改信息
+export function EditInfo(data) {
+    return http.request({
+        method: 'post',
+        url: '/news/editInfo/',
+        data
+    })
+}
+
+//删除信息
 export function DeleteInfo(data) {
     return http.request({
         method: 'post',
