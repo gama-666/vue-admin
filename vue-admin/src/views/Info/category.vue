@@ -87,6 +87,7 @@
         <template slot-scope="scope">
           <el-button type="danger" size="small" @click="remove(scope.row.id)">删除</el-button>
           <el-button type="success" size="small" @click="dialogEditState(scope.row.id)">编辑</el-button>
+          <el-button type="success" size="small" @click="details(scope.row.id)">编辑详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -286,6 +287,13 @@ export default {
       })[0].category_name;
       return type;
     };
+    //编辑详情
+    const details = (id) => {
+      root.$router.push({
+        name: "IntoDetails"
+      });
+    };
+
     /*生命周期 **********************************************/
     onMounted(() => {
       //获取分类
@@ -325,7 +333,8 @@ export default {
       toDate,
       toCategory,
       handleSelectionChange,
-      search
+      search,
+      details
     };
   }
 };

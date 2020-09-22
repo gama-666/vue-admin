@@ -10,7 +10,7 @@
               <!-- 一级分类 -->
               <h4>
                 <div @click="isOpen(item)">
-                  <svg-icon iconName="plus" />
+                  <svg-icon :iconName="isOpenArr.item[index].isOpen?'reduce':'plus'" />
                   {{item.category_name}}
                 </div>
                 <div class="button-group">
