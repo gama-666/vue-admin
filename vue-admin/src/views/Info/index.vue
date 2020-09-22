@@ -30,7 +30,7 @@
                 </div>
               </h4>
               <!-- 子级分类 -->
-              <ul v-if="item.children" :class="category.item[index].isOpen?'open':'retract'">
+              <ul v-if="item.children" :class="isOpenArr.item[index].isOpen?'open':'retract'">
                 <li v-for="childrenItem in item.children" :key="childrenItem.id">
                   {{childrenItem.category_name}}
                   <div class="button-group">
@@ -98,20 +98,25 @@ export default {
     const first_disabled = ref(true);
     const sec_disabled = ref(true);
     const submit_disabled = ref(true);
+    const i = ref("");
     //、表单
     const form = reactive({
       categoryName: "",
       secategoryName: "",
       categoryId: ""
     });
+    const isOpenArr = reactive({
+      item: []
+    });
     //、分类列表
     const category = reactive({
       item: []
     });
+
     /*函数 **************************************************/
     const isOpen = item => {
-      let i = category.item.findIndex(value => value.id == item.id);
-      category.item[i].isOpen = !category.item[i].isOpen;
+      i.value = category.item.findIndex(value => value.id == item.id);
+      isOpenArr.item[i.value].isOpen = !isOpenArr.item[i.value].isOpen;
     };
     //1、添加一级分类
     const addFirst = ({ item, type }) => {
@@ -227,6 +232,7 @@ export default {
           });
           getCategoryAll();
           form.categoryName = "";
+          isOpenArr.item.push({ isOpen: false });
         })
         .catch(error => {});
     };
@@ -270,12 +276,13 @@ export default {
     watch(
       () => categoryData.item,
       value => {
-        value.forEach(item => {
-          item.isOpen = true;
-        });
         category.item = value;
+        for (let i = 0; i < category.item.length; i++) {
+          isOpenArr.item.push({ isOpen: false });
+        }
       }
     );
+
     return {
       //ref
       title,
@@ -288,6 +295,7 @@ export default {
       //reactive
       form,
       category,
+      isOpenArr,
       //事件
       submit,
       addFirst,
