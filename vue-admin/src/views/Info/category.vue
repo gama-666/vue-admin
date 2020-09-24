@@ -289,8 +289,12 @@ export default {
     };
     //编辑详情
     const details = (id) => {
+      root.$store.commit("infoDetails/SET_ID",id)
       root.$router.push({
-        name: "IntoDetails"
+        name: "IntoDetails",
+        params:{
+          id
+        }
       });
     };
 

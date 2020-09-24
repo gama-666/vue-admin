@@ -1,4 +1,3 @@
-import { get } from "cookie_js";
 import {
     getUsername
 } from "../../utils/app.js";

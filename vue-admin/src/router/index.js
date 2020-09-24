@@ -70,7 +70,7 @@ const routes = [{
       meta: {
         name: "编辑详情"
       },
-      component: () => import("../views/Info/intoDetails.vue"),
+      component: () => import("../views/Info/infoDetails.vue"),
     },
 
   ]
