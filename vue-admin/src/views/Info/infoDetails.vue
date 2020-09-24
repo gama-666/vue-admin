@@ -1,7 +1,7 @@
 <template>
   <el-form ref="form" label-width="120px">
     <el-form-item label="信息分类：">
-      <el-select v-model="from.catagory_value" filterable placeholder="请选择" label="活动名称">
+      <el-select v-model="from.categoryId" filterable placeholder="请选择" label="活动名称">
         <el-option
           v-for="item in from.item"
           :key="item.id"
@@ -10,9 +10,24 @@
         ></el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="新闻标题：" >
-      <el-input placeholder="请输入标题" style="width:380px"></el-input>
+    <el-form-item label="新闻标题：">
+      <el-input :value="from.title" style="width:380px"></el-input>
+
     </el-form-item>
+    <el-form-item label="图片上传：">
+      <el-upload
+        action="https://jsonplaceholder.typicode.com/posts/"
+        list-type="picture-card"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleRemove"
+      >
+        <i class="el-icon-plus"></i>
+      </el-upload>
+      <el-dialog :visible.sync="data.dialogVisible" size="tiny">
+        <img width="100%" :src="data.dialogImageUrl" alt />
+      </el-dialog>
+    </el-form-item>
+
     <el-form-item>
       <el-button type="primary">保存</el-button>
     </el-form-item>
@@ -26,16 +41,19 @@ export default {
   name: "infodetails",
   setup(props, { root }) {
     const { getCategoryAll, categoryData } = common();
-    const id = root.$route.params.id || root.$store.getters["infoDetails/id"];
+    const id = root.$store.getters["infoDetails/id"];
+
     const data = reactive({
       item: [],
-      formLabelWidth:'120px'
+      dialogImageUrl: "",
+      dialogVisible: false
     });
     const from = reactive({
       item: [],
-      catagory_value: "国际信息"
+      categoryId: "",
+      title: ""
     });
-
+    //获取信息列表
     const getlist = () => {
       let requestData = {
         id, //信息ID（number）
@@ -45,8 +63,17 @@ export default {
       GetList(requestData)
         .then(response => {
           let successData = response.data.data.data;
+          from.categoryId = successData[0].categoryId;
+          from.title = successData[0].title;
         })
         .catch(error => {});
+    };
+    const handleRemove = (file, fileList) => {
+      console.log(file, fileList);
+    };
+    const handlePictureCardPreview = file => {
+      root.dialogImageUrl = file.url;
+      root.dialogVisible = true;
     };
 
     onMounted(() => {
@@ -64,7 +91,9 @@ export default {
     );
     return {
       data,
-      from
+      from,
+      handleRemove,
+      handlePictureCardPreview
     };
   }
 };
