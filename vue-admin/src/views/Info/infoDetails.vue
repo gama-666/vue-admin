@@ -17,7 +17,7 @@
     </el-form-item>
 
     <el-form-item label="新闻标题：">
-      <el-input :value="from.title" style="width:380px"></el-input>
+      <el-input v-model="from.title" placeholder="请输入标题"></el-input>
     </el-form-item>
 
     <el-form-item label="图片上传：">
@@ -44,32 +44,40 @@
       </el-date-picker>
     </el-form-item>
 
-    <el-form-item label="详细内容："> </el-form-item>
+    <el-form-item label="详细内容：">
+      <quillEditor v-model="from.content" />
+    </el-form-item>
 
     <el-form-item>
-      <el-button type="primary">保存</el-button>
+      <el-button type="primary" @click="submit">保存</el-button>
     </el-form-item>
   </el-form>
 </template>
 <script>
-import { GetList } from "@/api/news";
+import { GetList, EditInfo } from "@/api/news";
 import { common } from "@/api/common";
 import { timestampToTime } from "@/utils/common";
 import { onMounted, reactive, watch } from "@vue/composition-api";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
+import { quillEditor } from "vue-quill-editor";
 export default {
   name: "infodetails",
+  components: { quillEditor },
   setup(props, { root }) {
     const { getCategoryAll, categoryData } = common();
-
     const data = reactive({
       id: root.$route.params.id || root.$store.getters["infoDetails/id"],
       dialogImageUrl: "",
       dialogVisible: false
     });
     const from = reactive({
+      item: "",
       categoryId: "",
       title: "",
-      createDate: ""
+      createDate: "",
+      content: ""
     });
 
     //获取当前id信息
@@ -85,6 +93,7 @@ export default {
           from.categoryId = successData[0].categoryId;
           from.title = successData[0].title;
           from.createDate = timestampToTime(successData[0].createDate);
+          from.content = successData[0].content;
         })
         .catch(error => {});
     };
@@ -94,6 +103,27 @@ export default {
     const handlePictureCardPreview = file => {
       root.dialogImageUrl = file.url;
       root.dialogVisible = true;
+    };
+    //提交按钮
+    const submit = () => {
+      let requestData = {
+        id: data.id,
+        categoryId: from.categoryId,
+        title: from.title,
+        content: from.content
+      };
+      //修改信息接口请求
+      EditInfo(requestData)
+        .then(response => {
+          let data = response.data;
+          root.$message({
+            message: data.message,
+            type: "success"
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
     };
 
     onMounted(() => {
@@ -112,6 +142,7 @@ export default {
     return {
       data,
       from,
+      submit,
       handleRemove,
       handlePictureCardPreview
     };
