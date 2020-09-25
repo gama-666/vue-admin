@@ -1,7 +1,12 @@
 <template>
   <el-form ref="form" label-width="120px">
     <el-form-item label="信息分类：">
-      <el-select v-model="from.categoryId" filterable placeholder="请选择" label="活动名称">
+      <el-select
+        v-model="from.categoryId"
+        filterable
+        placeholder="请选择"
+        label="活动名称"
+      >
         <el-option
           v-for="item in from.item"
           :key="item.id"
@@ -10,10 +15,11 @@
         ></el-option>
       </el-select>
     </el-form-item>
+
     <el-form-item label="新闻标题：">
       <el-input :value="from.title" style="width:380px"></el-input>
-
     </el-form-item>
+
     <el-form-item label="图片上传：">
       <el-upload
         action="https://jsonplaceholder.typicode.com/posts/"
@@ -28,6 +34,18 @@
       </el-dialog>
     </el-form-item>
 
+    <el-form-item label="发布日期：">
+      <el-date-picker
+        v-model="from.createDate"
+        type="date"
+        placeholder="选择日期"
+        disabled
+      >
+      </el-date-picker>
+    </el-form-item>
+
+    <el-form-item label="详细内容："> </el-form-item>
+
     <el-form-item>
       <el-button type="primary">保存</el-button>
     </el-form-item>
@@ -36,27 +54,28 @@
 <script>
 import { GetList } from "@/api/news";
 import { common } from "@/api/common";
+import { timestampToTime } from "@/utils/common";
 import { onMounted, reactive, watch } from "@vue/composition-api";
 export default {
   name: "infodetails",
   setup(props, { root }) {
     const { getCategoryAll, categoryData } = common();
-    const id = root.$store.getters["infoDetails/id"];
 
     const data = reactive({
-      item: [],
+      id: root.$route.params.id || root.$store.getters["infoDetails/id"],
       dialogImageUrl: "",
       dialogVisible: false
     });
     const from = reactive({
-      item: [],
       categoryId: "",
-      title: ""
+      title: "",
+      createDate: ""
     });
-    //获取信息列表
+
+    //获取当前id信息
     const getlist = () => {
       let requestData = {
-        id, //信息ID（number）
+        id: data.id, //信息ID（number）
         pageNumber: 1, //页码（number）*
         pageSize: 1 //条数（number）*
       };
@@ -65,6 +84,7 @@ export default {
           let successData = response.data.data.data;
           from.categoryId = successData[0].categoryId;
           from.title = successData[0].title;
+          from.createDate = timestampToTime(successData[0].createDate);
         })
         .catch(error => {});
     };
