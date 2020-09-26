@@ -90,7 +90,7 @@ const routes = [{
     meta: {
       name: "用户列表"
     },
-    component: () => import("../views/user/list.vue"),
+    component: () => import("../views/user/index.vue"),
   },]
 }
 ];

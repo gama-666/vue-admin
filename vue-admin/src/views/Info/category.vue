@@ -8,7 +8,12 @@
             <label for>分类:</label>
             <div class="wrap-content">
               <el-form-item>
-                <el-select v-model="catagory_value" filterable placeholder="请选择" label="活动名称">
+                <el-select
+                  v-model="catagory_value"
+                  filterable
+                  placeholder="请选择"
+                  label="活动名称"
+                >
                   <el-option
                     v-for="item in options.category"
                     :key="item.id"
@@ -33,7 +38,7 @@
                 value-format="yyyy-MM-dd HH:mm:ss"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-                :default-time="['12:00:00','08:00:00']"
+                :default-time="['12:00:00', '08:00:00']"
               ></el-date-picker>
             </div>
           </div>
@@ -44,27 +49,28 @@
             <label for>关键字:</label>
             <div class="wrap-content_1">
               <el-form-item>
-                <el-select v-model="search_key" filterable :placeholder="search_keyword">
-                  <el-option
-                    v-for="item in keyword"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
+                <SelectValue :config="keyword.configOption" />
               </el-form-item>
             </div>
           </div>
         </el-col>
         <!--输入框 -->
         <el-col :span="4">
-          <el-input v-model="default_keyword" class="search_keyword" placeholder="请输入内容"></el-input>
+          <el-input
+            v-model="default_keyword"
+            class="search_keyword"
+            placeholder="请输入内容"
+          ></el-input>
         </el-col>
         <el-col :span="2">
-          <el-button type="danger" class="search" @click="search">搜索</el-button>
+          <el-button type="danger" class="search" @click="search"
+            >搜索</el-button
+          >
         </el-col>
         <el-col :span="2">
-          <el-button class="pull-right" type="danger" @click="dialogState">新增</el-button>
+          <el-button class="pull-right" type="danger" @click="dialogState"
+            >新增</el-button
+          >
         </el-col>
       </el-row>
     </el-form>
@@ -80,21 +86,42 @@
       >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="title" label="标题" width="700"></el-table-column>
-      <el-table-column prop="categoryId" label="类型" width="130" :formatter="toCategory"></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="237" :formatter="toDate"></el-table-column>
+      <el-table-column
+        prop="categoryId"
+        label="类型"
+        width="130"
+        :formatter="toCategory"
+      ></el-table-column>
+      <el-table-column
+        prop="createDate"
+        label="日期"
+        width="237"
+        :formatter="toDate"
+      ></el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="danger" size="small" @click="remove(scope.row.id)">删除</el-button>
-          <el-button type="success" size="small" @click="dialogEditState(scope.row.id)">编辑</el-button>
-          <el-button type="success" size="small" @click="details(scope.row.id)">编辑详情</el-button>
+          <el-button type="danger" size="small" @click="remove(scope.row.id)"
+            >删除</el-button
+          >
+          <el-button
+            type="success"
+            size="small"
+            @click="dialogEditState(scope.row.id)"
+            >编辑</el-button
+          >
+          <el-button type="success" size="small" @click="details(scope.row.id)"
+            >编辑详情</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
     <!-- 底部分页 -->
     <el-row class="page">
       <el-col :span="12">
-        <el-button type="success" size="small" @click="removeAll">批量删除</el-button>
+        <el-button type="success" size="small" @click="removeAll"
+          >批量删除</el-button
+        >
       </el-col>
       <el-pagination
         class="pull-right"
@@ -119,6 +146,7 @@ import Popup from "./dialog/popup";
 import Edit from "./dialog/edit";
 import { common } from "@/api/common";
 import { timestampToTime } from "@/utils/common";
+import SelectValue from "@/componeents/Select";
 import {
   computed,
   onMounted,
@@ -128,13 +156,12 @@ import {
 } from "@vue/composition-api";
 export default {
   name: "category",
-  components: { Popup, Edit },
+  components: { Popup, Edit, SelectValue },
   setup(props, { root }) {
     //、获取数据，引用公用方法
     const { getInfoCategory, categoryData } = common();
     /*数据* ***************************/
     //、基础数据
-    const search_keyword = ref("id"); //搜索关键字
     const default_keyword = ref(""); //输入框默认内容
     const catagory_value = ref(""); //类型
     const search_key = ref(""); //关键字
@@ -156,17 +183,12 @@ export default {
     const table_Data = reactive({
       item: []
     });
-    // 、关键字
-    const keyword = reactive([
-      {
-        value: "id",
-        label: "ID"
-      },
-      {
-        value: "title",
-        label: "标题"
+    //、关键字
+    const keyword = reactive({
+      configOption: {
+        init:["id", "title"]
       }
-    ]);
+    });
 
     /*函数* **********************************/
     //、每页显示条数
@@ -288,11 +310,11 @@ export default {
       return type;
     };
     //编辑详情
-    const details = (id) => {
-      root.$store.commit("infoDetails/SET_ID",id)
+    const details = id => {
+      root.$store.commit("infoDetails/SET_ID", id);
       root.$router.push({
         name: "IntoDetails",
-        params:{
+        params: {
           id
         }
       });
@@ -315,7 +337,6 @@ export default {
     return {
       //基础数据
       default_keyword,
-      search_keyword,
       catagory_value,
       search_key,
       total,
