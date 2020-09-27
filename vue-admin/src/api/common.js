@@ -1,5 +1,7 @@
 import { GetCategory, GetCategoryAll } from "@/api/news";
 import { reactive } from "@vue/composition-api";
+import http from "@/utils/request.js";
+
 export function common() {
     let categoryData = reactive({
         item: []
@@ -20,11 +22,18 @@ export function common() {
             })
             .catch(error => { });
     }
-
-
     return {
         getCategoryAll,
         getInfoCategory,
         categoryData
     }
+}
+
+/*注册*/
+export function loadTableData(parms) {
+    return http.request({
+        method: parms.method || "post",
+        url: parms.url,
+        data: parms.data || {}
+    })
 }

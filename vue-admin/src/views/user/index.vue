@@ -33,11 +33,18 @@
     <div class="table-list">
       <TableVue :config="data.configTable">
         <template v-slot:status="slotData">
-          <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+          <el-switch
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          ></el-switch>
         </template>
         <template v-slot:operation="slotData">
-          <el-button type="danger" size="small" @click="remove(slotData.data)">删除</el-button>
-          <el-button type="success" size="small" @click="edit(slotData.data)">编辑</el-button>
+          <el-button type="danger" size="small" @click="remove(slotData.data)"
+            >删除</el-button
+          >
+          <el-button type="success" size="small" @click="edit(slotData.data)"
+            >编辑</el-button
+          >
         </template>
       </TableVue>
     </div>
@@ -78,15 +85,28 @@ export default {
             columnType: "slot",
             slotName: "operation"
           }
-        ]
+        ],
+        requestData: {
+          url: "getUserList",
+          method: "post",
+          data: {
+            categoryId: "", //分类ID（number）
+            startTiem: "", //开始时间（string）
+            endTime: "", //结束时间（string）
+            title: "", //关键字标题（string）
+            id: "", //信息ID（number）
+            pageNumber: 1, //页码（number）*
+            pageSize: 10 //条数（number）*
+          }
+        }
       }
     });
-    const remove = (data)=>{
-      console.log("删除",data)
-    }   
-    const edit = (data)=>{
-      console.log("编辑",data)
-    }
+    const remove = data => {
+      console.log("删除", data);
+    };
+    const edit = data => {
+      console.log("编辑", data);
+    };
     return {
       data,
       remove,

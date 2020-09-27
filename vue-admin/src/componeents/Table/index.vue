@@ -33,7 +33,9 @@
   </el-table>
 </template>
 <script>
-import { reactive } from "@vue/composition-api";
+import { requestUrl } from "@/api/requestUrl";
+import { loadTableData } from "@/api/common";
+import { onBeforeMount, reactive } from "@vue/composition-api";
 export default {
   name: "tableVue",
   props: {
@@ -47,36 +49,50 @@ export default {
       //默认table表头配置项
       tableConfig: {
         selection: true,
+        recordCheckbox: "false",
+        requestData: {},
         tHead: []
       },
       //默认表格数据
-      tableData: [
-        {
-          eamil: "2056435@qq.com",
-          name: "张三",
-          phone: 13556026588,
-          address: "上海市普陀区金沙",
-          role: "超管"
-        },
-        {
-          eamil: "7865461@qq.com",
-          name: "李四",
-          phone: 13556026588,
-          address: "上海市普陀区金沙",
-          role: "超管"
-        }
-      ]
+      tableData: []
     });
+
+    //接口
+    const loadData = () => {
+      let requestKey = data.tableConfig.requestData;
+      let demandData = {
+        url: requestUrl[requestKey.url],
+        method: requestKey.method,
+        data: requestKey.data
+      };
+      loadTableData(demandData)
+        .then(response => {
+          //请求成功的数据
+          let successData = response.data.data.data;
+          //判断数据是否为空
+          if (successData && successData.length > 0) {
+            data.tableData = successData;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
     //初始化table表头配置项
     const initTableConfig = () => {
-      let tableData = props.config;
-      for (let key in tableData) {
-        if (data.tableConfig[key]) {
-          data.tableConfig[key] = tableData[key];
+      let configData = props.config;
+      let keys = Object.keys(data.tableConfig);
+      for (let key in configData) {
+        if (keys.includes(key)) {
+          data.tableConfig[key] = configData[key];
         }
       }
     };
-    initTableConfig(); 
+    
+    onBeforeMount(() => {
+      initTableConfig();
+      loadData();
+    });
 
     return {
       data
