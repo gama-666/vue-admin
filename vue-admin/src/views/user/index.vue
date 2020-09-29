@@ -25,7 +25,9 @@
           </div>
         </el-col>
         <el-col :span="4">
-          <el-button class="pull-right" type="danger">添加用户</el-button>
+          <el-button class="pull-right" type="danger" @click="add"
+            >添加用户</el-button
+          >
         </el-col>
       </el-row>
     </el-form>
@@ -48,15 +50,17 @@
         </template>
       </TableVue>
     </div>
+    <Popup />
   </div>
 </template>
 <script>
 import { reactive, ref } from "@vue/composition-api";
 import SelectValue from "@/componeents/Select";
 import TableVue from "@/componeents/Table";
+import Popup from "./dialog/Popup";
 export default {
   name: "userList",
-  components: { SelectValue, TableVue },
+  components: { SelectValue, TableVue, Popup },
   setup(props, { root }) {
     const data = reactive({
       //搜索关键字组件配置参数
@@ -69,7 +73,7 @@ export default {
         selection: true,
         //表头
         tHead: [
-          { label: "用户名/邮箱", field: "eamil" },
+          { label: "用户名/邮箱", field: "title" },
           { label: "真实姓名", field: "name" },
           { label: "手机号", field: "phone" },
           { label: "地区", field: "address" },
@@ -90,27 +94,29 @@ export default {
           url: "getUserList",
           method: "post",
           data: {
-            categoryId: "", //分类ID（number）
-            startTiem: "", //开始时间（string）
-            endTime: "", //结束时间（string）
-            title: "", //关键字标题（string）
-            id: "", //信息ID（number）
             pageNumber: 1, //页码（number）*
             pageSize: 10 //条数（number）*
           }
         }
       }
     });
+    //添加用户
+    const add = () => {
+      root.$store.commit("dialog/SHOW_DIALOG"); //显示弹窗
+    };
+    //删除用户
     const remove = data => {
       console.log("删除", data);
     };
+    //编辑用户
     const edit = data => {
-      console.log("编辑", data);
+      root.$store.commit("dialog/SHOW_DIALOG"); //显示弹窗
     };
     return {
       data,
       remove,
-      edit
+      edit,
+      add
     };
   }
 };
