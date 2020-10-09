@@ -56,6 +56,7 @@
   </el-dialog>
 </template>
 <script>
+import sha1 from "js-sha1";
 import { GetRole, GetUserAdd } from "@/api/user";
 import Citypicker from "@/componeents/Citypicker";
 import { reactive, ref, computed, onBeforeMount } from "@vue/composition-api";
@@ -84,6 +85,10 @@ export default {
       role: [] //角色类型
     });
 
+    //添加用户时，修改状态值
+    const dialogVisible = () => {
+      root.$store.commit("dialog/HIDE_DIALOG");
+    };
     //请求角色
     const getRole = () => {
       GetRole().then(response => {
@@ -94,10 +99,6 @@ export default {
     const openDialog = _ => {
       getRole(); //请求角色
     };
-    //添加用户时，修改状态值
-    const dialogVisible = () => {
-      root.$store.commit("dialog/HIDE_DIALOG");
-    };
 
     //提交按钮
     const submit = () => {
@@ -106,25 +107,30 @@ export default {
     };
     //添加用户接口
     const getUserAdd = () => {
-      let requestData = {
-        username: form.username, //用户名（string）
-        password: form.password, //密码（string）
-        truename: form.truename, //真实姓名（string）
-        phone: form.phone, //手机号（number）
-        region: data.citypickerData, //地区（json）
-        status: form.status, //禁启用状态（string）
-        role: form.role //角色类型（string）
-      };
-      console.log(requestData);
-
-      console.log(form);
-      GetUserAdd(requestData).then(response => {
-        let successData = response.data;
-        root.$message({
-          message: successData.message,
-          type: "success"
+      // let requestData = {
+      //   username: form.username, //用户名（string）
+      //   password: form.password, //密码（string）
+      //   truename: form.truename, //真实姓名（string）
+      //   phone: form.phone, //手机号（number）
+      //   region: data.citypickerData, //地区（json）
+      //   status: form.status, //禁启用状态（string）
+      //   role: form.role //角色类型（string）
+      // };
+      let requestData = { ...form };
+      requestData.role = requestData.role.join(); //角色类型转换（string）
+      requestData.region = JSON.stringify(data.citypickerData); //地区类型转换（json）
+      requestData.password = sha1(requestData.password); //密码加密
+      GetUserAdd(requestData)
+        .then(response => {
+          let successData = response.data;
+          root.$message({
+            message: successData.message,
+            type: "success"
+          });
+        })
+        .catch(error => {
+          console.log(error);
         });
-      });
     };
 
     //取消按钮

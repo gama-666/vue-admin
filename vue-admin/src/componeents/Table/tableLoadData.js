@@ -33,7 +33,6 @@ export function loadData() {
                 }
             })
             .catch(error => {
-                console.log(error);
                 tableData.loadingData = true
             });
     }

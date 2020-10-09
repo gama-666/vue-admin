@@ -5,6 +5,7 @@
       border
       style="width: 100%"
       v-loading="data.loadingData"
+      @selection-change="thatSelectionChange"
     >
       <!-- 多选框 -->
       <el-table-column
@@ -35,19 +36,27 @@
         ></el-table-column>
       </template>
     </el-table>
+
     <div class="page">
-      <el-pagination
-        v-if="data.tableConfig.paginationShow"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageData.currentPage"
-        :page-sizes="pageData.pageSizes"
-        :page-size="pageData.pageSize"
-        :layout="data.tableConfig.paginationLayout"
-        :total="pageData.total"
-        background
-      >
-      </el-pagination>
+      <el-row>
+        <el-col :span="4" class="page-left">
+          <slot name="tableFooter"></slot>
+        </el-col>
+        <el-col :span="20">
+          <el-pagination
+            v-if="data.tableConfig.paginationShow"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageData.currentPage"
+            :page-sizes="pageData.pageSizes"
+            :page-size="pageData.pageSize"
+            :layout="data.tableConfig.paginationLayout"
+            :total="pageData.total"
+            background
+          >
+          </el-pagination>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -61,13 +70,21 @@ export default {
     config: {
       type: Object,
       default: _ => {}
+    },
+    tableRow: {
+      type: Object,
+      default: _ => {}
     }
   },
-  setup(props, { root }) {
+  setup(props, { root, emit }) {
     //表格数据，接口请求
     const { tableData, tableLoadData } = loadData({ root });
     //页码记录及事件
-    const { pageData, handleSizeChange, handleCurrentChange } = paginationHook();
+    const {
+      pageData,
+      handleSizeChange,
+      handleCurrentChange
+    } = paginationHook();
     //默认table表头配置项
     const data = reactive({
       tableConfig: {
@@ -115,6 +132,19 @@ export default {
       }
     );
 
+    //勾选checkbox
+    const thatSelectionChange = val => {
+      let rowData = {
+        idItem: val.map(item => item.id)
+      };
+      emit("update:tableRow", rowData);
+    };
+
+    //刷新数据
+    const refresData = () => {
+      tableLoadData(data.tableConfig.requestData);
+    };
+
     onBeforeMount(() => {
       initTableConfig();
       tableLoadData(data.tableConfig.requestData); //表格数据，接口请求
@@ -124,7 +154,9 @@ export default {
       data,
       pageData,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      thatSelectionChange,
+      refresData
     };
   }
 };
@@ -133,5 +165,8 @@ export default {
 .page {
   margin-top: 20px;
   text-align: right;
+  .page-left {
+    text-align: left;
+  }
 }
 </style>

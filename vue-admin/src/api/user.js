@@ -19,3 +19,12 @@ export function GetUserAdd(data) {
 }
 
 
+/*删除用户*/
+export function UserDelete(data) {
+    return http.request({
+        method: 'post',
+        url: '/user/delete/',
+        data
+    })
+}
+

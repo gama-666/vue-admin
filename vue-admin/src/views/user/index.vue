@@ -33,12 +33,20 @@
     </el-form>
     <!-- 用户列表，表格 -->
     <div class="table-list">
-      <TableVue :config="data.configTable">
+      <TableVue
+        ref="userTable"
+        :config="data.configTable"
+        :tableRow.sync="data.tableRow"
+      >
         <template v-slot:status="slotData">
           <el-switch
+            v-model="slotData.data.status"
+            active-value="1"
+            inactive-value="2"
             active-color="#13ce66"
             inactive-color="#ff4949"
-          ></el-switch>
+          >
+          </el-switch>
         </template>
         <template v-slot:operation="slotData">
           <el-button type="danger" size="small" @click="remove(slotData.data)"
@@ -48,6 +56,11 @@
             >编辑</el-button
           >
         </template>
+        <template v-slot:tableFooter>
+          <el-button type="danger" size="small" @click="removeAll"
+            >批量删除</el-button
+          >
+        </template>
       </TableVue>
     </div>
     <Popup />
@@ -55,28 +68,33 @@
 </template>
 <script>
 import { reactive, ref } from "@vue/composition-api";
+import { UserDelete } from "@/api/user/";
+
+//组件
 import SelectValue from "@/componeents/Select";
 import TableVue from "@/componeents/Table";
 import Popup from "./dialog/Popup";
 export default {
   name: "userList",
   components: { SelectValue, TableVue, Popup },
-  setup(props, { root }) {
+  setup(props, { root, refs }) {
     const data = reactive({
       //搜索关键字组件配置参数
       configOption: {
         init: ["name", "phone"]
       },
+      //table选择的数据
+      tableRow: {},
       //table组件配置参数
       configTable: {
         //多选框
         selection: true,
         //表头
         tHead: [
-          { label: "用户名/邮箱", field: "title" },
-          { label: "真实姓名", field: "name" },
+          { label: "用户名/邮箱", field: "username" },
+          { label: "真实姓名", field: "truename" },
           { label: "手机号", field: "phone" },
-          { label: "地区", field: "address" },
+          { label: "地区", field: "region" },
           { label: "角色", field: "role" },
           {
             label: "禁启用状态",
@@ -100,23 +118,69 @@ export default {
         }
       }
     });
+
     //添加用户
     const add = () => {
       root.$store.commit("dialog/SHOW_DIALOG"); //显示弹窗
     };
-    //删除用户
-    const remove = data => {
-      console.log("删除", data);
-    };
     //编辑用户
-    const edit = data => {
+    const edit = userData => {
       root.$store.commit("dialog/SHOW_DIALOG"); //显示弹窗
     };
+    //单个删除用户
+    const remove = userData => {
+      let userId = [userData.id];
+      deleteDialog(userId);
+    };
+    //批量删除用户
+    const removeAll = () => {
+      let userId = data.tableRow.idItem;
+      if (!userId || userId.length === 0) {
+        root.$message({
+          message: "请勾选需要删除的用户！！！",
+          type: "error"
+        });
+        return false;
+      } else {
+        deleteDialog(userId);
+      }
+    };
+    //删除弹窗
+    const deleteDialog = userId => {
+      root.confirm({
+        content: "确定删除当前信息，确定后无法恢复！！",
+        fn: userDelete,
+        catchFn: () => {
+          root.$message({
+            message: "已取消删除",
+            type: "success"
+          });
+        },
+        id: userId
+      });
+    };
+    //删除用户接口
+    const userDelete = userId => {
+      UserDelete({ id: userId })
+        .then(respone => {
+          let successData = respone.data;
+          root.$message({
+            message: successData.message,
+            type: "success"
+          });
+          refs.userTable.refresData();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
+
     return {
       data,
       remove,
       edit,
-      add
+      add,
+      removeAll
     };
   }
 };
