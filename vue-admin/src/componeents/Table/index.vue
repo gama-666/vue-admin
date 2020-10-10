@@ -64,6 +64,8 @@
 import { loadData } from "./tableLoadData"; //表格数据
 import { paginationHook } from "./paginationHook"; //表格数据
 import { onBeforeMount, reactive, watch } from "@vue/composition-api";
+//中央事件
+import Bus from "@/utils/bus"
 export default {
   name: "tableVue",
   props: {
@@ -131,6 +133,11 @@ export default {
         tableLoadData(data.tableConfig.requestData);
       }
     );
+
+    //中央事件，刷新数据
+    Bus.$on('refreshTableData',()=>{
+       refresData()
+    })
 
     //勾选checkbox
     const thatSelectionChange = val => {

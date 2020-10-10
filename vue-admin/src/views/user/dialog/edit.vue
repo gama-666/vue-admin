@@ -1,8 +1,8 @@
 <template>
   <el-dialog
-    title="添加用户"
+    title="编辑用户"
     @close="dialogVisible"
-    :visible="data.dialogInfo"
+    :visible="data.dialogEdit"
     @open="openDialog"
     width="580px"
   >
@@ -48,7 +48,6 @@
         </el-checkbox-group>
       </el-form-item>
     </el-form>
-
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
       <el-button type="danger" @click="submit">确 定</el-button>
@@ -57,24 +56,25 @@
 </template>
 <script>
 import sha1 from "js-sha1";
-import { GetRole, GetUserAdd } from "@/api/user";
+import { GetRole } from "@/api/user";
 import Citypicker from "@/componeents/Citypicker";
-import { reactive, ref, computed, onBeforeMount } from "@vue/composition-api";
-//中央事件
-import Bus from "@/utils/bus";
+import { reactive, ref, computed, watch } from "@vue/composition-api";
+
 export default {
-  name: "popup",
+  name: "edit",
   components: { Citypicker },
   setup(props, { root, refs, emit }) {
     const data = reactive({
       //返回的省、市、区县、街道数据
       citypickerData: {},
       //弹窗的显示状态
-      dialogInfo: computed(() => root.$store.state.dialog.dialogInfo),
+      dialogEdit: computed(() => root.$store.state.dialog.dialogEdit),
       //label的宽度
       formLabelWidth: "72px",
       //角色名称
-      roleCode: []
+      roleCode: [],
+      //编辑弹窗数据
+      editData: computed(() => root.$store.state.dialog.editData)
     });
 
     const form = reactive({
@@ -87,9 +87,9 @@ export default {
       role: [] //角色类型
     });
 
-    //添加用户时，修改状态值
+    //编辑用户时，修改状态值
     const dialogVisible = () => {
-      root.$store.commit("dialog/HIDE_DIALOG");
+      root.$store.commit("dialog/HIDE_EDIT_DIALOG");
     };
     //请求角色
     const getRole = () => {
@@ -99,43 +99,25 @@ export default {
     };
     //窗口打开,动画结束时
     const openDialog = _ => {
+      form.username = data.editData.username;
+      form.truename = data.editData.truename;
+      form.phone = data.editData.phone;
+      form.status = data.editData.status;
+      form.region = data.editData.region;
+      form.role = data.editData.role.split(",");
       getRole(); //请求角色
     };
-    //重置表单
-    const resetForm = () => {
-      console.log("重置");
-      refs["form"].resetFields();
-    };
 
-    //提交按钮
+    //编辑用户确认按钮
     const submit = () => {
       getUserAdd();
-      root.$store.commit("dialog/HIDE_DIALOG");
+      root.$store.commit("dialog/HIDE_EDIT_DIALOG");
     };
-    //添加用户接口
-    const getUserAdd = () => {
-      let requestData = { ...form };
-      requestData.role = requestData.role.join(); //角色类型转换（string）
-      requestData.region = JSON.stringify(data.citypickerData); //地区类型转换（json）
-      requestData.password = sha1(requestData.password); //密码加密
-      GetUserAdd(requestData)
-        .then(response => {
-          let successData = response.data;
-          root.$message({
-            message: successData.message,
-            type: "success"
-          });
-          //调用中央事件，添加数据
-          Bus.$emit("refreshTableData");
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    };
-
+    //编辑用户接口
+    const getUserAdd = () => {};
     //取消按钮
     const close = () => {
-      root.$store.commit("dialog/HIDE_DIALOG");
+      root.$store.commit("dialog/HIDE_EDIT_DIALOG");
     };
 
     return {

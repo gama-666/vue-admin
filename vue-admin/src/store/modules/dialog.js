@@ -1,6 +1,7 @@
 const state = {
     dialogInfo: false,
-    dialogEdit: false
+    dialogEdit: false,
+    editData:{}
 }
 const getters = {}
 const mutations = {
@@ -17,8 +18,19 @@ const mutations = {
     HIDE_EDIT_DIALOG: (state) => {
         state.dialogEdit = false;
     },
+
+    SET_EDITDATA: (state,data) => {
+        state.editData = data
+    },
+    GET_EDITDATA:(state)=>{
+        state.editData
+    }
 }
+
+
 const actions = {}
+
+
 
 export default {
     namespaced: true,

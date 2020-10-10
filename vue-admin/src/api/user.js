@@ -28,3 +28,14 @@ export function UserDelete(data) {
     })
 }
 
+
+
+/*用户禁用启用*/
+export function UserActives(data) {
+    return http.request({
+        method: 'post',
+        url: '/user/actives/',
+        data
+    })
+}
+

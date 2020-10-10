@@ -1,12 +1,7 @@
-import {
-    reactive
-} from "@vue/composition-api";
-import {
-    requestUrl
-} from "@/api/requestUrl";
-import {
-    loadTableData
-} from "@/api/common";
+import { reactive } from "@vue/composition-api";
+import {requestUrl } from "@/api/requestUrl";
+import { loadTableData } from "@/api/common";
+
 export function loadData() {
     const tableData = reactive({
         item: [],
