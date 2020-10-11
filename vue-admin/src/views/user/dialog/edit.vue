@@ -56,7 +56,7 @@
 </template>
 <script>
 import sha1 from "js-sha1";
-import { GetRole } from "@/api/user";
+import { GetRole, UserEdit } from "@/api/user";
 import Citypicker from "@/componeents/Citypicker";
 import { reactive, ref, computed, watch } from "@vue/composition-api";
 
@@ -99,22 +99,36 @@ export default {
     };
     //窗口打开,动画结束时
     const openDialog = _ => {
-      form.username = data.editData.username;
-      form.truename = data.editData.truename;
-      form.phone = data.editData.phone;
-      form.status = data.editData.status;
-      form.region = data.editData.region;
+      let editDataKey = Object.keys(data.editData);
+      editDataKey.forEach(key => {
+        form[key] = data.editData[key];
+      });
       form.role = data.editData.role.split(",");
+      form.password = "";
       getRole(); //请求角色
     };
 
     //编辑用户确认按钮
     const submit = () => {
-      getUserAdd();
+      userEdit();
       root.$store.commit("dialog/HIDE_EDIT_DIALOG");
     };
     //编辑用户接口
-    const getUserAdd = () => {};
+    const userEdit = () => {
+      let requestData = { ...form };
+      requestData.id = parseInt(requestData.id);
+      requestData.password == "" ? "" : sha1(requestData.password);
+      requestData.phone = parseInt(requestData.phone);
+      requestData.region = JSON.stringify( data.citypickerData);
+      requestData.role = requestData.role.toString();
+      requestData.btnPerm ="1";
+      UserEdit(requestData).then(response => {
+        console.log(response)
+      }).catch(error=>{
+        console.log(error)
+
+      });
+    };
     //取消按钮
     const close = () => {
       root.$store.commit("dialog/HIDE_EDIT_DIALOG");
