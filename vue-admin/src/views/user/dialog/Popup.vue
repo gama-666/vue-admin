@@ -37,7 +37,7 @@
         <el-radio v-model="form.status" label="1">启用</el-radio>
         <el-radio v-model="form.status" label="2">禁用</el-radio>
       </el-form-item>
-      <el-form-item label="角色:" :label-width="data.formLabelWidth">
+      <el-form-item label="系统:" :label-width="data.formLabelWidth">
         <el-checkbox-group v-model="form.role">
           <el-checkbox
             v-for="item in data.roleCode"
@@ -57,7 +57,7 @@
 </template>
 <script>
 import sha1 from "js-sha1";
-import { GetRole, GetUserAdd } from "@/api/user";
+import { GetRole, GetSystem,GetUserAdd } from "@/api/user";
 import Citypicker from "@/componeents/Citypicker";
 import { reactive, ref, computed, onBeforeMount } from "@vue/composition-api";
 //中央事件
@@ -93,7 +93,7 @@ export default {
     };
     //请求角色
     const getRole = () => {
-      GetRole().then(response => {
+      GetSystem().then(response => {
         data.roleCode = response.data.data;
       });
     };

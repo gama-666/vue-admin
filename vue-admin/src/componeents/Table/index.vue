@@ -65,7 +65,7 @@ import { loadData } from "./tableLoadData"; //表格数据
 import { paginationHook } from "./paginationHook"; //表格数据
 import { onBeforeMount, reactive, watch } from "@vue/composition-api";
 //中央事件
-import Bus from "@/utils/bus"
+import Bus from "@/utils/bus";
 export default {
   name: "tableVue",
   props: {
@@ -135,9 +135,9 @@ export default {
     );
 
     //中央事件，刷新数据
-    Bus.$on('refreshTableData',()=>{
-       refresData()
-    })
+    Bus.$on("refreshTableData", () => {
+      refresData();
+    });
 
     //勾选checkbox
     const thatSelectionChange = val => {
@@ -152,6 +152,15 @@ export default {
       tableLoadData(data.tableConfig.requestData);
     };
 
+    //带参数的刷新数据
+    const parmsLoadData = parms => {
+      let requestData = { ...parms };
+      requestData.pageNumber = 1;
+      requestData.pageSize = 10;
+      data.tableConfig.requestData.data = requestData;
+      tableLoadData(data.tableConfig.requestData);
+    };
+
     onBeforeMount(() => {
       initTableConfig();
       tableLoadData(data.tableConfig.requestData); //表格数据，接口请求
@@ -163,7 +172,8 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       thatSelectionChange,
-      refresData
+      refresData,
+      parmsLoadData
     };
   }
 };

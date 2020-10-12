@@ -1,6 +1,11 @@
 import router from "./index";
+import {
+    getToken,
+    removeUsername,
+    removeToken
+} from "@/utils/app";
+import store from "../store/index"
 
-import { getToken ,removeUsername ,removeToken} from "@/utils/app";
 
 //添加白名单，数组indexOf方法，判断数组中是否存在指定的某个对象，如果不存在，则返回-1
 const wihteRouter = ['/login'];
@@ -13,7 +18,23 @@ router.beforeEach((to, from, next) => {
             removeToken()
             next()
         } else {
-            next()
+            if (store.getters['permission/roles'].length === 0) {
+                store.dispatch("permission/getRoles").then((respone) => {
+                    let role = respone
+                    store.dispatch("permission/createRouter", role).then((respone) => {
+                        let addRouter = store.getters['permission/addRouter'];
+                        let allRouter = store.getters['permission/allRouter'];
+                        //路由更新
+                        router.options.routes = allRouter
+                        //添加动态路由
+                        router.addRoutes(addRouter)
+                        next({...to,replace:true})
+                     
+                    })
+                });
+            } else {
+                next()
+            }
         }
     } else {
         if (wihteRouter.indexOf(to.path) !== -1) {

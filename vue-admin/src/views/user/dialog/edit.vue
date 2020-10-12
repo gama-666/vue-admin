@@ -37,7 +37,7 @@
         <el-radio v-model="form.status" label="1">启用</el-radio>
         <el-radio v-model="form.status" label="2">禁用</el-radio>
       </el-form-item>
-      <el-form-item label="角色:" :label-width="data.formLabelWidth">
+      <el-form-item label="系统:" :label-width="data.formLabelWidth">
         <el-checkbox-group v-model="form.role">
           <el-checkbox
             v-for="item in data.roleCode"
@@ -56,10 +56,11 @@
 </template>
 <script>
 import sha1 from "js-sha1";
-import { GetRole, UserEdit } from "@/api/user";
+import { GetRole,GetSystem, UserEdit } from "@/api/user";
 import Citypicker from "@/componeents/Citypicker";
 import { reactive, ref, computed, watch } from "@vue/composition-api";
-
+//中央事件
+import Bus from "@/utils/bus";
 export default {
   name: "edit",
   components: { Citypicker },
@@ -93,7 +94,7 @@ export default {
     };
     //请求角色
     const getRole = () => {
-      GetRole().then(response => {
+      GetSystem().then(response => {
         data.roleCode = response.data.data;
       });
     };
@@ -110,24 +111,33 @@ export default {
 
     //编辑用户确认按钮
     const submit = () => {
-      userEdit();
-      root.$store.commit("dialog/HIDE_EDIT_DIALOG");
-    };
-    //编辑用户接口
-    const userEdit = () => {
+      //请求数据
       let requestData = { ...form };
       requestData.id = parseInt(requestData.id);
-      requestData.password == "" ? "" : sha1(requestData.password);
+      requestData.password ? requestData.password = sha1(requestData.password) : delete requestData.password;
       requestData.phone = parseInt(requestData.phone);
-      requestData.region = JSON.stringify( data.citypickerData);
+      requestData.region = data.citypickerData.provinceValue ? JSON.stringify( data.citypickerData) :JSON.stringify( requestData.region);
       requestData.role = requestData.role.toString();
-      requestData.btnPerm ="1";
-      UserEdit(requestData).then(response => {
-        console.log(response)
-      }).catch(error=>{
-        console.log(error)
-
-      });
+      requestData.btnPerm = "1";
+      //请求接口
+      userEdit(requestData);
+    };
+    //编辑用户接口
+    const userEdit = (requestData) => {
+      UserEdit(requestData)
+        .then(response => {
+          let successData = response.data;
+          root.$message({
+          message: successData.message,
+          type: "success"
+          });
+          //调用中央事件，刷新数据
+          Bus.$emit("refreshTableData");
+          root.$store.commit("dialog/HIDE_EDIT_DIALOG");
+        })
+        .catch(error => {
+          console.log(error);
+        });
     };
     //取消按钮
     const close = () => {

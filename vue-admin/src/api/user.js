@@ -1,6 +1,6 @@
 import http from "@/utils/request.js";
 
-/*获取用户角色*/
+/*获取角色*/
 export function GetRole(data = {}) {
     return http.request({
         method: 'post',
@@ -8,6 +8,17 @@ export function GetRole(data = {}) {
         data
     })
 }
+
+
+/*获取系统列表*/
+export function GetSystem(data = {}) {
+    return http.request({
+        method: 'post',
+        url: '/system/',
+        data
+    })
+}
+
 
 /*添加用户*/
 export function GetUserAdd(data) {
@@ -17,7 +28,6 @@ export function GetUserAdd(data) {
         data
     })
 }
-
 
 /*删除用户*/
 export function UserDelete(data) {

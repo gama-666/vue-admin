@@ -5,10 +5,11 @@ import {
 const state = {
     // 取本地值，本地没值取默认值(临时)
     isCollpase: JSON.parse(sessionStorage.getItem('isCollpase')) || false,
-    username: getUsername()||""
+    username: getUsername() || "",
+
 }
 const getters = {
-
+   
 }
 const mutations = {
     SET_COLLPASE: (state) => {
@@ -16,10 +17,10 @@ const mutations = {
         // html5本地存储(临时存储，关闭浏览器就清除)
         sessionStorage.setItem('isCollpase', JSON.stringify(state.isCollpase))
     },
-    GET_USERNAME:(state)=>{
+    GET_USERNAME: (state) => {
         state.username = getUsername()
     }
-    
+
 }
 const actions = {}
 

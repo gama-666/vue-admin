@@ -24,3 +24,12 @@ export function Login(data) {
         data
     })
 }
+
+/*获取用户角色*/
+export function GetUserRole(data = {}) {
+    return http.request({
+        method: 'post',
+        url: '/userRole/',
+        data
+    })
+}
