@@ -47,6 +47,19 @@
           >
         </el-checkbox-group>
       </el-form-item>
+       
+        <el-form-item label="按钮权限:" :label-width="data.formLabelWidth">
+           <template v-if="form.btnPerm.length>0">
+             <div v-for="item in form.btnPerm">
+              <h4> {{item.name}}</h4>
+              <template v-if="item.perm && item.perm.length>0">
+               <el-checkbox-group v-model="form.btnPerm">
+                <el-checkbox v-for="buttons in item.perm" :label="buttons.value" :key="buttons.value">{{ buttons.name }}</el-checkbox >
+              </el-checkbox-group>
+              </template>
+             </div>
+           </template>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
@@ -56,7 +69,7 @@
 </template>
 <script>
 import sha1 from "js-sha1";
-import { GetRole,GetSystem, UserEdit } from "@/api/user";
+import { GetRole,GetSystem, UserEdit,GetPermButton } from "@/api/user";
 import Citypicker from "@/componeents/Citypicker";
 import { reactive, ref, computed, watch } from "@vue/composition-api";
 //中央事件
@@ -85,7 +98,8 @@ export default {
       phone: "", //手机号
       region: {}, //地区
       status: "1", //禁启用状态
-      role: [] //角色类型
+      role: [], //角色类型
+      btnPerm: [] //按钮权限
     });
 
     //编辑用户时，修改状态值
@@ -97,12 +111,19 @@ export default {
       GetSystem().then(response => {
         data.roleCode = response.data.data;
       });
+      GetPermButton().then(response => {
+        form.btnPerm = response.data.data;
+      });
     };
     //窗口打开,动画结束时
     const openDialog = _ => {
       let editDataKey = Object.keys(data.editData);
       editDataKey.forEach(key => {
-        form[key] = data.editData[key];
+        if(key == "btnPerm"){
+            form.btnPerm = data.editData.btnPerm.split(",");
+        }else{
+            form[key] = data.editData[key];
+        }
       });
       form.role = data.editData.role.split(",");
       form.password = "";
@@ -118,7 +139,8 @@ export default {
       requestData.phone = parseInt(requestData.phone);
       requestData.region = data.citypickerData.provinceValue ? JSON.stringify( data.citypickerData) :JSON.stringify( requestData.region);
       requestData.role = requestData.role.toString();
-      requestData.btnPerm = "1";
+      requestData.btnPerm = requestData.btnPerm.join();
+
       //请求接口
       userEdit(requestData);
     };

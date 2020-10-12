@@ -4,40 +4,63 @@ Vue.use(VueRouter);
 
 //默认路由
 export const defaultRouterMap = [{
-    path: "/",
-    redirect: "login",
-    hidden: true,
-    meta: {
-      name: "主页"
-    }
+  path: "/",
+  redirect: "login",
+  hidden: true,
+  meta: {
+    name: "主页"
+  }
+},
+{
+  path: "/login",
+  name: "Login",
+  hidden: true,
+  meta: {
+    name: "登录"
   },
-  {
-    path: "/login",
-    name: "Login",
-    hidden: true,
+  component: () => import("../views/Login/index.vue")
+},
+{
+  path: "/console",
+  name: "Console",
+  redirect: "index",
+  meta: {
+    name: "控制台",
+    icon: "console"
+  },
+  component: () => import("../views/Layout/index.vue"),
+  children: [{
+    path: "/index",
+    name: "Index",
     meta: {
-      name: "登录"
+      name: "首页"
     },
-    component: () => import("../views/Login/index.vue")
+    component: () => import("../views/Console/index.vue"),
+  },]
+},
+//404页面
+{
+  path: "/page404",
+  meta: {
+    name: "控制台",
+    icon: "console",
   },
-  {
-    path: "/console",
-    name: "Console",
-    redirect: "index",
+  hidden: true,
+  component: () => import("../views/Layout/index.vue"),
+  children: [{
+    path: "/404",
     meta: {
-      name: "控制台",
-      icon: "console"
+      name: "404"
     },
-    component: () => import("../views/Layout/index.vue"),
-    children: [{
-      path: "/index",
-      name: "Index",
-      meta: {
-        name: "首页"
-      },
-      component: () => import("../views/Console/index.vue"),
-    }, ]
-  },
+    hidden: true,
+    component: () => import("../views/404.vue"),
+  },]
+},
+{
+  path: "*",
+  redirect: "404",
+  hidden: true
+},
 ]
 
 
@@ -49,60 +72,66 @@ const router = new VueRouter({
 
 //动态路由
 export const asnycRouterMap = [{
-    path: "/info",
-    name: "Info",
+  path: "/info",
+  name: "Info",
+  meta: {
+    name: "信息管理",
+    keepAlive: true,
+    icon: "info",
+    system: "infoSystem"
+  },
+  component: () => import("../views/Layout/index.vue"),
+  children: [{
+    path: "/infoCategory",
+    name: "InfoCategory",
     meta: {
-      name: "信息管理",
-      icon: "info",
-      system: "infoSystem"
+      keepAlive: true,
+      name: "信息分类"
     },
-    component: () => import("../views/Layout/index.vue"),
-    children: [{
-        path: "/infoCategory",
-        name: "InfoCategory",
-        meta: {
-          name: "信息分类"
-        },
-        component: () => import("../views/Info/category.vue"),
-      }, {
-        path: "/infoList",
-        name: "InfoList",
-        meta: {
-          name: "信息列表"
-        },
-        component: () => import("../views/Info/index.vue"),
-      },
-      {
-        path: "/intoDetails",
-        name: "IntoDetails",
-        hidden: true,
-        meta: {
-          name: "编辑详情"
-        },
-        component: () => import("../views/Info/infoDetails.vue"),
-      },
-
-    ]
+    component: () => import("../views/Info/category.vue"),
+  }, {
+    path: "/infoList",
+    name: "InfoList",
+    meta: {
+      keepAlive: true,
+      name: "信息列表"
+    },
+    component: () => import("../views/Info/index.vue"),
   },
   {
-    path: "/user",
-    name: "User",
-    redirect: "index",
+    path: "/intoDetails",
+    name: "IntoDetails",
+    hidden: true,
     meta: {
-      name: "用户管理",
-      icon: "user",
-      system: "userSystem"
+      keepAlive: true,
+      name: "编辑详情"
     },
-    component: () => import("../views/Layout/index.vue"),
-    children: [{
-      path: "/userList",
-      name: "UserList",
-      meta: {
-        name: "用户列表"
-      },
-      component: () => import("../views/user/index.vue"),
-    }, ]
-  }
+    component: () => import("../views/Info/infoDetails.vue"),
+  },
+
+  ]
+},
+{
+  path: "/user",
+  name: "User",
+  redirect: "index",
+  meta: {
+    name: "用户管理",
+    icon: "user",
+    keepAlive: true,
+    system: "userSystem"
+  },
+  component: () => import("../views/Layout/index.vue"),
+  children: [{
+    path: "/userList",
+    name: "UserList",
+    meta: {
+      keepAlive: true,
+      name: "用户列表"
+    },
+    component: () => import("../views/user/index.vue"),
+  },]
+}
 
 ]
 

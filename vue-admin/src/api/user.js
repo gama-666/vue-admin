@@ -57,3 +57,12 @@ export function UserEdit(data) {
 }
 
 
+/*按钮权限*/
+export function GetPermButton(data) {
+    return http.request({
+        method: 'post',
+        url: '/permButton/',
+        data
+    })
+}
+

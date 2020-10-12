@@ -39,14 +39,23 @@
       </el-form-item>
       <el-form-item label="系统:" :label-width="data.formLabelWidth">
         <el-checkbox-group v-model="form.role">
-          <el-checkbox
-            v-for="item in data.roleCode"
-            :label="item.role"
-            :key="item.role"
-            >{{ item.name }}</el-checkbox
-          >
+          <el-checkbox v-for="item in data.roleCode" :label="item.role" :key="item.role">{{ item.name }}</el-checkbox >
         </el-checkbox-group>
+
       </el-form-item>
+         <el-form-item label="按钮权限:" :label-width="data.formLabelWidth">
+           <template v-if="form.btnPerm.length>0">
+             <div v-for="item in form.btnPerm">
+              <h4> {{item.name}}</h4>
+              <template v-if="item.perm && item.perm.length>0">
+               <el-checkbox-group v-model="form.btnPerm">
+                <el-checkbox v-for="buttons in item.perm" :label="buttons.value" :key="buttons.value">{{ buttons.name }}</el-checkbox >
+              </el-checkbox-group>
+              </template>
+             </div>
+           </template>
+      </el-form-item>
+
     </el-form>
 
     <div slot="footer" class="dialog-footer">
@@ -57,7 +66,7 @@
 </template>
 <script>
 import sha1 from "js-sha1";
-import { GetRole, GetSystem,GetUserAdd } from "@/api/user";
+import { GetRole, GetSystem, GetUserAdd, GetPermButton } from "@/api/user";
 import Citypicker from "@/componeents/Citypicker";
 import { reactive, ref, computed, onBeforeMount } from "@vue/composition-api";
 //中央事件
@@ -74,7 +83,8 @@ export default {
       //label的宽度
       formLabelWidth: "72px",
       //角色名称
-      roleCode: []
+      roleCode: [],
+        
     });
 
     const form = reactive({
@@ -84,7 +94,8 @@ export default {
       phone: "", //手机号
       region: {}, //地区
       status: "1", //禁启用状态
-      role: [] //角色类型
+      role: [], //角色类型,
+      btnPerm: [] //按钮权限
     });
 
     //添加用户时，修改状态值
@@ -96,7 +107,11 @@ export default {
       GetSystem().then(response => {
         data.roleCode = response.data.data;
       });
+      GetPermButton().then(response => {
+        form.btnPerm = response.data.data;
+      });
     };
+
     //窗口打开,动画结束时
     const openDialog = _ => {
       getRole(); //请求角色
