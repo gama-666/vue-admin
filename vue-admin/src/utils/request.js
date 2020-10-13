@@ -2,7 +2,7 @@ import axios from "axios";
 import { Message } from 'element-ui';
 import { getToken, getUsername } from "./app";
 
-const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/devapi';
+const BASEURL = process.env.NODE_ENV === 'production' ? '/productapi' : '/devapi';
 
 const service = axios.create({
   baseURL: BASEURL,
