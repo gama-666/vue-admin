@@ -56,11 +56,7 @@ export const defaultRouterMap = [{
     component: () => import("../views/404.vue"),
   },]
 },
-{
-  path: "*",
-  redirect: "404",
-  hidden: true
-},
+
 ]
 
 
@@ -108,7 +104,6 @@ export const asnycRouterMap = [{
     },
     component: () => import("../views/Info/infoDetails.vue"),
   },
-
   ]
 },
 {
@@ -131,8 +126,12 @@ export const asnycRouterMap = [{
     },
     component: () => import("../views/user/index.vue"),
   },]
-}
-
+},
+{
+  path: "*",
+  redirect: "404",
+  hidden: true
+},
 ]
 
 export default router;

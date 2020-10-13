@@ -5,9 +5,11 @@
         <li
           v-for="item in menuTab"
           :key="item.id"
-          :class="{'current':item.current}"
+          :class="{ current: item.current }"
           @click="toggleMenu(item)"
-        >{{item.txt}}</li>
+        >
+          {{ item.txt }}
+        </li>
       </ul>
       <!-- 表单 -->
       <el-form
@@ -20,7 +22,12 @@
       >
         <el-form-item prop="username">
           <label for="username">邮箱</label>
-          <el-input id="username" type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+          <el-input
+            id="username"
+            type="text"
+            v-model="ruleForm.username"
+            autocomplete="off"
+          ></el-input>
         </el-form-item>
 
         <el-form-item prop="password">
@@ -51,7 +58,13 @@
           <label for="code">验证码</label>
           <el-row :gutter="11">
             <el-col :span="12">
-              <el-input type="text" id="code" v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
+              <el-input
+                type="text"
+                id="code"
+                v-model="ruleForm.code"
+                minlength="6"
+                maxlength="6"
+              ></el-input>
             </el-col>
             <el-col :span="12">
               <el-button
@@ -60,7 +73,8 @@
                 class="block"
                 :disabled="codeButtonStatus"
                 @click="getsms()"
-              >{{codeButtonText}}</el-button>
+                >{{ codeButtonText }}</el-button
+              >
             </el-col>
           </el-row>
         </el-form-item>
@@ -71,7 +85,8 @@
             @click="submitForm('ruleForm')"
             class="login-bin block"
             :disabled="loginButtonStatus"
-          >{{model==="login"?"登录":"注册"}}</el-button>
+            >{{ model === "login" ? "登录" : "注册" }}</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -87,7 +102,7 @@ import {
   validataCode
 } from "@/utils/validata";
 import { setToken, setUsername } from "@/utils/app.js";
-import { ref, reactive, onMounted } from "@vue/composition-api";
+import { ref, reactive, onMounted, onUnmounted } from "@vue/composition-api";
 export default {
   name: "login",
   setup(props, { refs, root }) {
@@ -231,7 +246,8 @@ export default {
           loginButtonStatus.value = false;
         })
         .catch(error => {
-          loginButtonStatus.value = true;
+          loginButtonStatus.value = false;
+          codeButtonText.value = "获取验证码";
         });
     };
     //、提交表单
@@ -271,7 +287,7 @@ export default {
           toggleMenu(menuTab[0]);
         })
         .catch(error => {
-            console.log(error)
+          console.log(error);
         });
     };
     //登录
@@ -292,7 +308,7 @@ export default {
           });
         })
         .catch(error => {
-          console.log(error)
+          console.log(error);
         });
     };
 
@@ -325,6 +341,11 @@ export default {
     //4、生命周期 ***********************************************************************/
     //、挂载完成后
     onMounted(() => {});
+
+    //、页面销毁时，清除定时器
+    onUnmounted(()=>{
+      clearCountDown(timer.value);
+    })
 
     //5、3.0需要返回//
     return {

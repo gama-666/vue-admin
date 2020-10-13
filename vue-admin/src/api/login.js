@@ -33,3 +33,12 @@ export function GetUserRole(data = {}) {
         data
     })
 }
+
+/*获取用户角色*/
+export function Logout(data = {}) {
+    return http.request({
+        method: 'post',
+        url: '/logout/',
+        data
+    })
+}

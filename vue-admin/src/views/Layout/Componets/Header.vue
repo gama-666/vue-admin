@@ -7,7 +7,7 @@
       <div class="pull-left user-Info">
         <svg-icon iconName="userInfo" :className="userClass" />
       </div>
-      <div class="user pull-left">{{username}}</div>
+      <div class="user pull-left">{{ username }}</div>
       <div class="pull-left header-icon" @click="exit">
         <svg-icon iconName="exit" :className="exitClass" />
       </div>

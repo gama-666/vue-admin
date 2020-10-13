@@ -55,6 +55,7 @@ const actions = {
                         return item;
                     }
                 })
+                addRouter.push(asnycRouterMap[asnycRouterMap.length - 1])
             }
             //更新路由
             commit("SET_ROUTER", addRouter)
