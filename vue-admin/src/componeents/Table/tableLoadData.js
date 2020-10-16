@@ -20,6 +20,10 @@ export function loadData() {
             .then(response => {
                 //请求成功的数据
                 let successData = response.data.data.data;
+                if( successData.length == 0){
+                    tableData.loadingData = false
+                    return false 
+                }
                 //判断数据是否为空
                 if (successData && successData.length > 0) {
                     tableData.total = response.data.data.total;
